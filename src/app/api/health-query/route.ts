@@ -152,13 +152,25 @@ export async function POST(request: Request) {
       listWorkouts(userId, ownVitalsScope, { from: fourteenDaysAgoISO }),
     ]);
 
-    // Recent lab visits (last 2) with results, test_name asc within a visit
-    const labVisits = allLabVisits.slice(0, 2).map((v) => ({
-      ...v,
-      labResults: [...v.labResults].sort((a, b) =>
-        a.testName.localeCompare(b.testName),
-      ),
-    }));
+    // Recent lab visits: last 12 months (matching the dashboard AI summary's
+    // window in summary-cache.ts), most recent 8 — NOT a fixed "last 2"
+    // regardless of date. A hard visit-count cap with no date floor silently
+    // drops an older-but-still-relevant visit (e.g. a testosterone level)
+    // whenever a newer, unrelated panel (e.g. metabolic-only) was drawn after
+    // it — the AI then denies having any data for a value that's fully in
+    // the database and visible on the Labs page.
+    const labVisitCutoffISO = new Date();
+    labVisitCutoffISO.setFullYear(labVisitCutoffISO.getFullYear() - 1);
+    const labVisitCutoffDay = labVisitCutoffISO.toISOString().slice(0, 10);
+    const labVisits = allLabVisits
+      .filter((v) => v.visitDate >= labVisitCutoffDay)
+      .slice(0, 8)
+      .map((v) => ({
+        ...v,
+        labResults: [...v.labResults].sort((a, b) =>
+          a.testName.localeCompare(b.testName),
+        ),
+      }));
     // Each result carries its visit's draw date so lab-derived findings can
     // be date-framed (spec §AI #2).
     const labResultsData = labVisits.flatMap((v) =>

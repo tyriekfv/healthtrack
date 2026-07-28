@@ -130,15 +130,29 @@ export async function createLabVisitWithResults(
   return { ...visit, labResults: rows };
 }
 
+/**
+ * Case/whitespace-insensitive key for matching test names across imports.
+ * PDF-to-structured-data extraction (parse-lab.ts) doesn't guarantee two
+ * imports of "the same" test render byte-identical strings — trailing
+ * whitespace or a stray Unicode space is invisible in the UI but breaks a
+ * naive exact match, silently blanking any dashboard card or query pinned to
+ * the test. Collapse and fold case before comparing rather than relying on
+ * imports being byte-perfect.
+ */
+export function normalizeTestName(name: string): string {
+  return name.trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
 export interface ListLabResultsOptions {
-  /** Exact test-name filter (dashboard stat cards). */
+  /** Test-name filter (dashboard stat cards) — matched via normalizeTestName. */
   testNames?: string[];
 }
 
 /**
  * Flat results (newest created_at first) joined with their visit date —
  * serves the dashboard stat cards and the PDF export, which read the user's
- * results without a dependent filter ('all').
+ * results without a dependent filter ('all'). testNames filtering happens in
+ * JS (not SQL) so it can use normalizeTestName instead of an exact match.
  */
 export async function listLabResults(
   actorId: string,
@@ -154,13 +168,13 @@ export async function listLabResults(
       and(
         eq(labResults.userId, scope.ownerId),
         dependentFilter(labResults.dependentId, scope.dependentId),
-        opts.testNames && opts.testNames.length > 0
-          ? inArray(labResults.testName, opts.testNames)
-          : undefined,
       ),
     )
     .orderBy(desc(labResults.createdAt));
-  return rows.map(({ result, visitDate }) => ({ ...result, visitDate }));
+  const mapped = rows.map(({ result, visitDate }) => ({ ...result, visitDate }));
+  if (!opts.testNames || opts.testNames.length === 0) return mapped;
+  const wanted = new Set(opts.testNames.map(normalizeTestName));
+  return mapped.filter((r) => wanted.has(normalizeTestName(r.testName)));
 }
 
 export interface ListLabResultsV1Options {
