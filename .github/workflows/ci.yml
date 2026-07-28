@@ -51,6 +51,7 @@ jobs:
           docker run -d --name healthtrack \
             -p 3000:3000 \
             -e APP_URL=http://localhost:3000 \
+            -e SIGNUPS_ENABLED=true \
             -v "$RUNNER_TEMP/htdata:/data" \
             healthtrack:ci
 
