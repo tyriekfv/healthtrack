@@ -1,19 +1,19 @@
-# Branch Image: builds a test image from feature/trt-cycle-tracking on every
-# push, so it can be pulled without ever touching :latest or main. Unlike
-# release.yml (tag-triggered, multi-arch, stamps :latest) this is single-arch
-# (linux/amd64) and always pushes the SAME fixed tag — meant for iterating on
-# one branch on one Unraid host, not for a real release.
+# Branch Image: builds the EMR/cycle-tracking image from main on every push,
+# so it can be pulled without a local build. Unlike release.yml (tag-
+# triggered, multi-arch, stamps :latest — meant for the vanilla `base` line)
+# this is single-arch (linux/amd64) and always pushes the SAME fixed tag,
+# :cycle-tracking, so it never touches :latest regardless of what's on main.
 #
 # Also regenerates any pending Drizzle migration (drizzle-kit needs Node,
-# which the branch author's environment didn't have) and commits it back to
-# the branch before building, so the image always ships with a migration file
-# matching the current schema.
+# which isn't guaranteed to be available wherever a commit originates) and
+# commits it back to the branch before building, so the image always ships
+# with a migration file matching the current schema.
 name: Branch Image (cycle-tracking)
 
 on:
   push:
     branches:
-      - feature/trt-cycle-tracking
+      - main
   workflow_dispatch:
 
 permissions:
