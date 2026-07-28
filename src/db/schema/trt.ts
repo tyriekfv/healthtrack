@@ -20,7 +20,7 @@
  * relies on elsewhere (see vitals.ts's idx_vitals_upsert_tuple comment).
  */
 import { sql } from 'drizzle-orm';
-import { sqliteTable, text, integer, index } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, index } from 'drizzle-orm/sqlite-core';
 import { user } from './auth';
 import { dependents } from './users';
 import { uuidPk, timestampNow } from './_shared';

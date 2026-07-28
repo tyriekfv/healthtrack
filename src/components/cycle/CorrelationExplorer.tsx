@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useCorrelation } from '@/hooks/useCorrelation';
 import ConfidenceBadge from './ConfidenceBadge';
 import Skeleton from '@/components/shared/Skeleton';
@@ -34,35 +34,32 @@ export default function CorrelationExplorer({ labMetrics, compounds }: Correlati
   const [against, setAgainst] = useState<AgainstMode>(
     compounds.length > 0 ? 'dose' : 'donation_days',
   );
-  const [againstCompound, setAgainstCompound] = useState(compounds[0] ?? '');
-  const [againstMetric, setAgainstMetric] = useState(labMetrics[0] ?? '');
+  const [againstCompound, setAgainstCompound] = useState('');
+  const [againstMetric, setAgainstMetric] = useState('');
 
-  // Props load asynchronously (dose/lab data fetches finish after mount), so
-  // the initial useState value can lag an empty list — resync once real
-  // options arrive rather than leaving the picker stuck on ''.
-  useEffect(() => {
-    if (!againstCompound && compounds.length > 0) setAgainstCompound(compounds[0]);
-  }, [compounds, againstCompound]);
-  useEffect(() => {
-    if (!againstMetric && labMetrics.length > 0) setAgainstMetric(labMetrics[0]);
-  }, [labMetrics, againstMetric]);
+  // compounds/labMetrics load asynchronously (dose/lab fetches finish after
+  // mount), so the picker's raw selection state can still be '' the first
+  // time real options exist. Fall back to the first option at render time
+  // instead of syncing state in an effect (React docs: derive, don't sync).
+  const effectiveAgainstCompound = againstCompound || compounds[0] || '';
+  const effectiveAgainstMetric = againstMetric || labMetrics[0] || '';
 
   const covariateSpec = useMemo(() => {
     if (against === 'dose') {
-      return againstCompound ? `dose:${againstCompound}` : null;
+      return effectiveAgainstCompound ? `dose:${effectiveAgainstCompound}` : null;
     }
     if (against === 'metric') {
-      return againstMetric ? `metric:${againstMetric}` : null;
+      return effectiveAgainstMetric ? `metric:${effectiveAgainstMetric}` : null;
     }
     return against;
-  }, [against, againstCompound, againstMetric]);
+  }, [against, effectiveAgainstCompound, effectiveAgainstMetric]);
 
   const metricParam = primaryMetric === 'ALL' ? undefined : primaryMetric;
   const { results, loading, error } = useCorrelation(covariateSpec, metricParam);
 
   // A metric can't usefully correlate with itself.
   const visibleResults = results.filter(
-    (r) => !(against === 'metric' && r.metric === againstMetric),
+    (r) => !(against === 'metric' && r.metric === effectiveAgainstMetric),
   );
 
   return (
@@ -114,7 +111,7 @@ export default function CorrelationExplorer({ labMetrics, compounds }: Correlati
           </label>
           <select
             id="corr-compound"
-            value={againstCompound}
+            value={effectiveAgainstCompound}
             onChange={(e) => setAgainstCompound(e.target.value)}
             className="w-full px-3 py-2.5 rounded-xl border text-sm focus:outline-none sm:max-w-xs"
             style={selectStyle}
@@ -135,7 +132,7 @@ export default function CorrelationExplorer({ labMetrics, compounds }: Correlati
           </label>
           <select
             id="corr-against-metric"
-            value={againstMetric}
+            value={effectiveAgainstMetric}
             onChange={(e) => setAgainstMetric(e.target.value)}
             className="w-full px-3 py-2.5 rounded-xl border text-sm focus:outline-none sm:max-w-xs"
             style={selectStyle}
