@@ -35,6 +35,16 @@ const moreLinks = [
     ),
   },
   {
+    label: 'Cycle Tracking',
+    href: '/cycle',
+    icon: (
+      // Droplet — dose periods + blood donations
+      <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2.69l5.66 6.6a8 8 0 11-11.31 0L12 2.69z" />
+      </svg>
+    ),
+  },
+  {
     label: 'Allergies',
     href: '/allergies',
     icon: (

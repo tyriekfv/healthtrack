@@ -129,6 +129,72 @@ export interface Medication {
   updated_at: string;
 }
 
+export interface DosePeriod {
+  id: string;
+  user_id: string;
+  compound: string;
+  dose: string;
+  start_date: string;
+  end_date: string | null;
+  notes: string | null;
+  dependent_id?: string | null;
+  created_at: string;
+}
+
+/** A currently-open dose period, with days-at-dose computed on read. */
+export interface CurrentDose extends DosePeriod {
+  days_at_dose: number;
+}
+
+export type DonationType = 'whole_blood' | 'double_red' | 'platelet';
+
+export interface Donation {
+  id: string;
+  user_id: string;
+  donation_date: string;
+  donation_type: DonationType;
+  notes: string | null;
+  dependent_id?: string | null;
+  created_at: string;
+  next_eligible_date: string;
+}
+
+export interface RecoveryPoint {
+  date: string;
+  days_later: number;
+  delta: Record<string, number>;
+}
+
+export interface DonationRecoveryEntry {
+  donation_id: string;
+  donation_date: string;
+  donation_type: DonationType;
+  baseline: Record<string, number>;
+  timeline: RecoveryPoint[];
+}
+
+export type ConfidenceLevel = 'red' | 'yellow' | 'green';
+
+export interface Confidence {
+  level: ConfidenceLevel;
+  label: string;
+  note: string;
+}
+
+export type Covariate =
+  | { type: 'dose'; compound: string }
+  | { type: 'donation_days' }
+  | { type: 'weeks_since_change' }
+  | { type: 'metric'; metric: string };
+
+export interface CorrelationResult {
+  metric: string;
+  covariate: Covariate;
+  r: number | null;
+  n: number;
+  confidence: Confidence;
+}
+
 export interface LabVisit {
   id: string;
   user_id: string;
