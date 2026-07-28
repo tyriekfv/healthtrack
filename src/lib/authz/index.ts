@@ -56,7 +56,9 @@ export type Section =
   | 'notes'
   | 'providers'
   | 'profile'
-  | 'fitness';
+  | 'fitness'
+  | 'medication_dose_periods'
+  | 'blood_donations';
 
 export interface AuthzScope {
   /** The user whose data is being accessed (row user_id / profiles.id). */
@@ -81,6 +83,11 @@ export const ALL_SECTIONS: readonly Section[] = [
   // legacy RLS policy — conservative grants: owner full; delegates read-only
   // (not in the writable/deletable sets); not shareable.
   'fitness',
+  // 'medication_dose_periods' / 'blood_donations' (TRT/PED cycle tracking)
+  // are likewise new domains with no legacy RLS policy — same conservative
+  // grants as 'fitness': owner full; delegates read-only; not shareable.
+  'medication_dose_periods',
+  'blood_donations',
 ];
 
 /** Sections with a has_health_share() SELECT policy (003/005/008/014). */

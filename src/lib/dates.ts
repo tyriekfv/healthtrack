@@ -107,3 +107,15 @@ export function localDayKey(d: Date = new Date()): string {
 function pad2(n: number): string {
   return String(n).padStart(2, '0');
 }
+
+/**
+ * Whole days between two `YYYY-MM-DD` day keys (`b - a`), UTC math (no DST
+ * edges). Negative when `b` is before `a`. Used by the dose-period /
+ * donation-recovery / correlation-covariate calculations, which all reason
+ * in whole calendar days rather than timestamps.
+ */
+export function daysBetweenDayKeys(a: string, b: string): number {
+  const ta = new Date(`${a}T00:00:00Z`).getTime();
+  const tb = new Date(`${b}T00:00:00Z`).getTime();
+  return Math.round((tb - ta) / 86_400_000);
+}

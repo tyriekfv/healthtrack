@@ -16,6 +16,7 @@ export * from './users';
 export * from './clinical';
 export * from './vitals';
 export * from './fitness';
+export * from './trt';
 export * from './sharing';
 export * from './integrations';
 export * from './system';
