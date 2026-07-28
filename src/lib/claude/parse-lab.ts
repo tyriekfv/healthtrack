@@ -120,5 +120,14 @@ export async function parseLabPdf(pdfBuffer: Buffer): Promise<ParsedLabResult> {
     );
   });
 
+  // Collapse incidental whitespace Claude's extraction can introduce
+  // (leading/trailing/doubled spaces) so the same test parsed from two
+  // different PDFs is more likely to land on an identical test_name string —
+  // dashboard stat cards and query context match on exact/normalized name,
+  // so drift here silently breaks those features on a later import.
+  for (const r of parsed.results) {
+    r.test_name = r.test_name.trim().replace(/\s+/g, ' ');
+  }
+
   return parsed;
 }
