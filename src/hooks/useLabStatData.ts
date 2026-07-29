@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { apiFetch } from '@/lib/api/client';
+import { normalizeLabTestName } from '@/lib/lab-test-names';
 import type { Flag, LabResult } from '@/lib/types';
 
 export interface LabStatDataPoint {
@@ -50,17 +51,20 @@ export function useLabStatData(testNames: string[]) {
 
         if (cancelled) return;
 
-        // Group by test_name (rows arrive created_at desc)
+        // Group by canonical analyte name (rows arrive created_at desc). The
+        // saved card may say "Testosterone, Total, MS" while a later provider
+        // reports the same analyte as simply "Testosterone".
         const grouped = new Map<string, LabResultWithVisitDate[]>();
         for (const row of results) {
-          const group = grouped.get(row.test_name) ?? [];
+          const key = normalizeLabTestName(row.test_name);
+          const group = grouped.get(key) ?? [];
           group.push(row);
-          grouped.set(row.test_name, group);
+          grouped.set(key, group);
         }
 
         const points: LabStatDataPoint[] = [];
         for (const testName of testNames) {
-          const rows = grouped.get(testName);
+          const rows = grouped.get(normalizeLabTestName(testName));
           if (!rows || rows.length === 0) continue;
 
           const latest = rows[0];

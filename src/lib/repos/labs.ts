@@ -16,6 +16,7 @@ import { z } from 'zod';
 import { db } from '@/db';
 import { labResults, labVisits } from '@/db/schema';
 import { requireAuthz } from '@/lib/authz';
+import { normalizeLabTestName } from '@/lib/lab-test-names';
 import { dependentFilter, requireListAuthz, type ListScope } from './_scope';
 
 export type LabVisitRow = typeof labVisits.$inferSelect;
@@ -140,7 +141,7 @@ export async function createLabVisitWithResults(
  * imports being byte-perfect.
  */
 export function normalizeTestName(name: string): string {
-  return name.trim().replace(/\s+/g, ' ').toLowerCase();
+  return normalizeLabTestName(name);
 }
 
 export interface ListLabResultsOptions {
