@@ -21,6 +21,7 @@ concurrency:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
   tag-and-release:
@@ -62,3 +63,13 @@ jobs:
             --title "${{ steps.version.outputs.next }}" \
             --generate-notes \
             --target main
+
+      - name: Trigger the image build for this tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # The tag push above used GITHUB_TOKEN, which GitHub deliberately
+          # excludes from triggering other workflows' `push` events (anti-
+          # loop protection) -- so release.yml's `push: tags` never fires on
+          # its own here. Dispatch it directly instead.
+          gh workflow run release.yml --ref "${{ steps.version.outputs.next }}"

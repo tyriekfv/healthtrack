@@ -5,12 +5,20 @@
 # assembles the multi-arch manifest. QEMU is deliberately avoided: emulated
 # `npm ci`/node-gyp for better-sqlite3 is slow at best and has hung
 # indefinitely in practice.
+#
+# Also accepts workflow_dispatch: a tag pushed by auto-release.yml using the
+# default GITHUB_TOKEN does NOT fire the `push: tags` trigger below (GitHub
+# deliberately suppresses workflow-triggering-workflow via GITHUB_TOKEN, to
+# prevent infinite loops) -- so auto-release.yml explicitly dispatches this
+# workflow (`gh workflow run release.yml --ref <tag>`) after pushing the tag.
+# A human pushing a tag directly still triggers it normally via `push`.
 name: Release
 
 on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
 
 permissions:
   contents: read
