@@ -108,12 +108,79 @@ export function useLabResults() {
     setLabVisits((current) => current.filter((visit) => visit.id !== id));
   }, []);
 
+  /** Visit-level fields only (date, provider, notes) — results untouched. */
+  const updateLabVisit = useCallback(
+    async (id: string, updates: Record<string, unknown>) => {
+      const updated = await apiFetch<LabVisit>(`/api/labs/${encodeURIComponent(id)}`, {
+        method: 'PATCH',
+        body: JSON.stringify(updates),
+      });
+      setLabVisits((current) =>
+        current.map((visit) => (visit.id === id ? { ...visit, ...updated } : visit)),
+      );
+    },
+    [],
+  );
+
+  /** Add a result to an existing visit — for a value the import missed. */
+  const addLabResult = useCallback(
+    async (visitId: string, input: Record<string, unknown>) => {
+      const result = await apiFetch<LabResult>(
+        `/api/labs/${encodeURIComponent(visitId)}/results`,
+        { method: 'POST', body: JSON.stringify(input) },
+      );
+      setLabVisits((current) =>
+        current.map((visit) =>
+          visit.id === visitId
+            ? { ...visit, lab_results: [...visit.lab_results, result] }
+            : visit,
+        ),
+      );
+      return result;
+    },
+    [],
+  );
+
+  /** Fix one result in place without touching the rest of the visit. */
+  const updateLabResult = useCallback(
+    async (id: string, updates: Record<string, unknown>) => {
+      const updated = await apiFetch<LabResult>(`/api/labs/results/${encodeURIComponent(id)}`, {
+        method: 'PATCH',
+        body: JSON.stringify(updates),
+      });
+      setLabVisits((current) =>
+        current.map((visit) => ({
+          ...visit,
+          lab_results: visit.lab_results.map((r) => (r.id === id ? updated : r)),
+        })),
+      );
+    },
+    [],
+  );
+
+  /** Remove one bad/duplicate result without deleting the whole visit. */
+  const deleteLabResult = useCallback(async (id: string) => {
+    await apiFetch<void>(`/api/labs/results/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+    });
+    setLabVisits((current) =>
+      current.map((visit) => ({
+        ...visit,
+        lab_results: visit.lab_results.filter((r) => r.id !== id),
+      })),
+    );
+  }, []);
+
   return {
     labVisits,
     loading,
     error,
     saveLabVisit,
     deleteLabVisit,
+    updateLabVisit,
+    addLabResult,
+    updateLabResult,
+    deleteLabResult,
     refetch: fetchLabResults,
   };
 }

@@ -58,6 +58,11 @@ const labVisitInputSchema = z
 
 export type LabVisitInput = z.input<typeof labVisitInputSchema>;
 
+const labVisitUpdateSchema = labVisitInputSchema
+  .omit({ results: true })
+  .partial();
+const labResultUpdateSchema = labResultInputSchema.partial();
+
 /**
  * Visits (newest first) with their results nested — hook parity with the old
  * PostgREST `lab_visits.select('*, lab_results(*)')` embed: results attach by
@@ -152,6 +157,105 @@ export async function deleteLabVisit(
   );
   await db.delete(labVisits).where(eq(labVisits.id, id));
   return visit;
+}
+
+/** Row scope comes from the row itself (authz parity with other repos). */
+async function loadVisit(id: string): Promise<LabVisitRow> {
+  const rows = await db.select().from(labVisits).where(eq(labVisits.id, id)).limit(1);
+  if (!rows[0]) throw new NotFoundError();
+  return rows[0];
+}
+
+async function loadResult(id: string): Promise<LabResultRow> {
+  const rows = await db.select().from(labResults).where(eq(labResults.id, id)).limit(1);
+  if (!rows[0]) throw new NotFoundError();
+  return rows[0];
+}
+
+/**
+ * Edit a visit's own fields (date, provider, notes) without touching its
+ * results — the counterpart to createLabVisitWithResults's all-in-one write,
+ * for fixing a single field after import instead of delete-and-reimport.
+ */
+export async function updateLabVisit(
+  actorId: string,
+  id: string,
+  updates: unknown,
+): Promise<LabVisitRow> {
+  const visit = await loadVisit(id);
+  await requireAuthz(
+    actorId,
+    { ownerId: visit.userId, dependentId: visit.dependentId },
+    'labs',
+    'write',
+  );
+  const values = labVisitUpdateSchema.parse(updates);
+  const [updated] = await db
+    .update(labVisits)
+    .set(values)
+    .where(eq(labVisits.id, id))
+    .returning();
+  return updated;
+}
+
+/** Add a result to an existing visit — for a value the import missed. */
+export async function addLabResult(
+  actorId: string,
+  visitId: string,
+  input: unknown,
+): Promise<LabResultRow> {
+  const visit = await loadVisit(visitId);
+  await requireAuthz(
+    actorId,
+    { ownerId: visit.userId, dependentId: visit.dependentId },
+    'labs',
+    'write',
+  );
+  const values = labResultInputSchema.parse(input);
+  const [row] = await db
+    .insert(labResults)
+    .values({
+      ...values,
+      userId: visit.userId,
+      dependentId: visit.dependentId,
+      labVisitId: visit.id,
+    })
+    .returning();
+  return row;
+}
+
+/** Fix one result in place (wrong value, mislabeled test, bad range) without touching the rest of the visit. */
+export async function updateLabResult(
+  actorId: string,
+  id: string,
+  updates: unknown,
+): Promise<LabResultRow> {
+  const result = await loadResult(id);
+  await requireAuthz(
+    actorId,
+    { ownerId: result.userId, dependentId: result.dependentId },
+    'labs',
+    'write',
+  );
+  const values = labResultUpdateSchema.parse(updates);
+  const [updated] = await db
+    .update(labResults)
+    .set(values)
+    .where(eq(labResults.id, id))
+    .returning();
+  return updated;
+}
+
+/** Remove one bad/duplicate result without deleting the whole visit. */
+export async function deleteLabResult(actorId: string, id: string): Promise<void> {
+  const result = await loadResult(id);
+  await requireAuthz(
+    actorId,
+    { ownerId: result.userId, dependentId: result.dependentId },
+    'labs',
+    'delete',
+  );
+  await db.delete(labResults).where(eq(labResults.id, id));
 }
 
 /**

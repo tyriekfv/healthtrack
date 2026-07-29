@@ -1,8 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { errorResponse } from '@/lib/api/respond';
 import { requireUser } from '@/lib/auth/session';
-import { deleteLabVisit } from '@/lib/repos/labs';
+import { bodyToCamel, rowToSnake } from '@/lib/api/snake';
+import { deleteLabVisit, updateLabVisit } from '@/lib/repos/labs';
 import { deleteUpload } from '@/lib/storage';
+
+/** PATCH — visit-level fields only (date, provider, notes); results are untouched. */
+export async function PATCH(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> },
+) {
+  try {
+    const user = await requireUser();
+    const { id } = await context.params;
+    const updates = bodyToCamel(await request.json());
+    const visit = await updateLabVisit(user.id, id, updates);
+    return NextResponse.json(rowToSnake(visit));
+  } catch (error) {
+    return errorResponse(error);
+  }
+}
 
 export async function DELETE(
   _request: NextRequest,
