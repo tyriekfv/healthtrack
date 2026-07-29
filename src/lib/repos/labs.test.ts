@@ -172,13 +172,39 @@ describe('labs repo', () => {
   });
 
   it('stranger is denied on everything', async () => {
-    await repo.createLabVisitWithResults(OWNER, ownScope, sampleVisit);
+    const visit = await repo.createLabVisitWithResults(OWNER, ownScope, sampleVisit);
     await expect(repo.listLabVisitsWithResults(STRANGER, ownScope)).rejects.toMatchObject(
       { status: 404 },
     );
     await expect(repo.listLabResults(STRANGER, ownScope)).rejects.toMatchObject({
       status: 404,
     });
+    await expect(repo.deleteLabVisit(STRANGER, visit.id)).rejects.toMatchObject({
+      status: 404,
+    });
+  });
+
+  it('owner deletes a report and all of its results', async () => {
+    const visit = await repo.createLabVisitWithResults(OWNER, ownScope, sampleVisit);
+
+    const deleted = await repo.deleteLabVisit(OWNER, visit.id);
+    expect(deleted.id).toBe(visit.id);
+    expect(await repo.listLabVisitsWithResults(OWNER, ownScope)).toEqual([]);
+    expect(await repo.listLabResults(OWNER, ownScope)).toEqual([]);
+  });
+
+  it('delegates cannot delete lab reports', async () => {
+    const visit = await repo.createLabVisitWithResults(OWNER, ownScope, sampleVisit);
+    insertDelegate(ctx.sqlite, {
+      ownerId: OWNER,
+      delegateUserId: VIEWER,
+      permissionLevel: 'admin',
+    });
+
+    await expect(repo.deleteLabVisit(VIEWER, visit.id)).rejects.toMatchObject({
+      status: 404,
+    });
+    expect(await repo.listLabVisitsWithResults(OWNER, ownScope)).toHaveLength(1);
   });
 
   it('listLabResults returns flat rows with visit_date, filterable by test names', async () => {

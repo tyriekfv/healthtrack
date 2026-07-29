@@ -19,7 +19,7 @@ export default function LabsPage() {
   // PDF import runs through the AI parser — hide its entry points when the
   // instance has no ANTHROPIC_API_KEY configured.
   const aiHidden = capabilities?.ai === false;
-  const { labVisits, loading, error, saveLabVisit } = useLabResults();
+  const { labVisits, loading, error, saveLabVisit, deleteLabVisit } = useLabResults();
   const [tab, setTab] = useState<View>('visits');
   const [flow, setFlow] = useState<Flow>('idle');
   const [parsedData, setParsedData] = useState<ParsedLabResult | null>(null);
@@ -307,7 +307,7 @@ export default function LabsPage() {
       {!loading && !error && hasResults && tab === 'visits' && (
         <div className="space-y-4">
           {visitCards.map((visit) => (
-            <VisitCard key={visit.id} visit={visit} />
+            <VisitCard key={visit.id} visit={visit} onDelete={deleteLabVisit} />
           ))}
         </div>
       )}

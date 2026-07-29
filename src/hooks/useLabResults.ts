@@ -101,5 +101,19 @@ export function useLabResults() {
     [fetchLabResults, dependentId, delegateOwnerId],
   );
 
-  return { labVisits, loading, error, saveLabVisit, refetch: fetchLabResults };
+  const deleteLabVisit = useCallback(async (id: string) => {
+    await apiFetch<void>(`/api/labs/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+    });
+    setLabVisits((current) => current.filter((visit) => visit.id !== id));
+  }, []);
+
+  return {
+    labVisits,
+    loading,
+    error,
+    saveLabVisit,
+    deleteLabVisit,
+    refetch: fetchLabResults,
+  };
 }

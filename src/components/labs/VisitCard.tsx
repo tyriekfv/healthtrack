@@ -6,14 +6,34 @@ import FlagBadge from '@/components/shared/FlagBadge';
 
 interface VisitCardProps {
   visit: LabVisit & { results: LabResult[] };
+  onDelete: (id: string) => Promise<void>;
 }
 
-export default function VisitCard({ visit }: VisitCardProps) {
+export default function VisitCard({ visit, onDelete }: VisitCardProps) {
   const [expanded, setExpanded] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const flaggedCount = visit.results.filter(
     (r) => r.flag && r.flag !== 'normal',
   ).length;
+
+  async function handleDelete() {
+    const confirmed = window.confirm(
+      `Delete this ${new Date(visit.visit_date).toLocaleDateString()} report and all ${visit.results.length} results? This cannot be undone.`,
+    );
+    if (!confirmed) return;
+
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      await onDelete(visit.id);
+    } catch (error) {
+      setDeleteError(error instanceof Error ? error.message : 'Failed to delete report');
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   return (
     <div
@@ -126,6 +146,27 @@ export default function VisitCard({ visit }: VisitCardProps) {
               ))}
             </tbody>
           </table>
+          <div className="flex justify-end px-3 py-3">
+            <div className="flex flex-col items-end gap-2">
+              {deleteError && (
+                <p className="text-xs" style={{ color: 'var(--color-terracotta)' }}>
+                  {deleteError}
+                </p>
+              )}
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={deleting}
+                className="rounded-lg border px-3 py-2 text-xs font-medium cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                style={{
+                  borderColor: 'var(--color-terracotta)',
+                  color: 'var(--color-terracotta)',
+                }}
+              >
+                {deleting ? 'Deleting…' : 'Delete report and all results'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

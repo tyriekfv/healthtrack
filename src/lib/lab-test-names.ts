@@ -31,6 +31,13 @@ export function normalizeLabTestName(name: string): string {
     'testosterone total ms': 'testosterone total',
     'testosterone total lc ms': 'testosterone total',
     'testosterone total lc ms ms': 'testosterone total',
+    'testosterone free': 'testosterone free',
+    'free testosterone': 'testosterone free',
+    'free t': 'testosterone free',
+    'psa free': 'psa free',
+    'free psa': 'psa free',
+    'prostate specific antigen free': 'psa free',
+    'prostate specific ag free': 'psa free',
   };
 
   return aliases[normalized] ?? normalized;

@@ -9,6 +9,8 @@ describe('normalizeLabTestName', () => {
     ['Estradiol, Ultrasensitive, LC/MS', 'Estradiol'],
     ['HGB', 'Hemoglobin'],
     ['HCT, Auto', 'Hematocrit'],
+    ['Free T', 'Testosterone, Free'],
+    ['Free PSA', 'PSA, Free'],
   ])('matches provider aliases: %s / %s', (left, right) => {
     expect(normalizeLabTestName(left)).toBe(normalizeLabTestName(right));
   });

@@ -15,7 +15,7 @@ import { and, desc, eq, gte, inArray, like } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '@/db';
 import { labResults, labVisits } from '@/db/schema';
-import { requireAuthz } from '@/lib/authz';
+import { NotFoundError, requireAuthz } from '@/lib/authz';
 import { normalizeLabTestName } from '@/lib/lab-test-names';
 import { dependentFilter, requireListAuthz, type ListScope } from './_scope';
 
@@ -129,6 +129,29 @@ export async function createLabVisitWithResults(
       .returning();
   }
   return { ...visit, labResults: rows };
+}
+
+/**
+ * Delete one imported report. lab_results are removed by the visit foreign
+ * key's ON DELETE CASCADE. Return the visit so the route can clean up its
+ * stored source file after the database deletion succeeds.
+ */
+export async function deleteLabVisit(
+  actorId: string,
+  id: string,
+): Promise<LabVisitRow> {
+  const rows = await db.select().from(labVisits).where(eq(labVisits.id, id)).limit(1);
+  const visit = rows[0];
+  if (!visit) throw new NotFoundError();
+
+  await requireAuthz(
+    actorId,
+    { ownerId: visit.userId, dependentId: visit.dependentId },
+    'labs',
+    'delete',
+  );
+  await db.delete(labVisits).where(eq(labVisits.id, id));
+  return visit;
 }
 
 /**

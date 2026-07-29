@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { apiFetch } from '@/lib/api/client';
+import { appendRequestedLabTests } from '@/lib/lab-test-query';
 import { normalizeLabTestName } from '@/lib/lab-test-names';
 import type { Flag, LabResult } from '@/lib/types';
 
@@ -31,7 +32,6 @@ export function useLabStatData(testNames: string[]) {
 
   useEffect(() => {
     if (testNames.length === 0) {
-      setData([]);
       return;
     }
 
@@ -43,8 +43,8 @@ export function useLabStatData(testNames: string[]) {
       try {
         const params = new URLSearchParams({
           dependent_id: 'all',
-          tests: testNames.join(','),
         });
+        appendRequestedLabTests(params, testNames);
         const results = await apiFetch<LabResultWithVisitDate[]>(
           `/api/labs/results?${params.toString()}`,
         );
@@ -98,5 +98,8 @@ export function useLabStatData(testNames: string[]) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [testNames.join(',')]);
 
-  return { labStatData: data, labStatLoading: loading };
+  return {
+    labStatData: testNames.length === 0 ? [] : data,
+    labStatLoading: testNames.length === 0 ? false : loading,
+  };
 }
