@@ -17,9 +17,11 @@ interface TrendDataPoint {
 interface TrendCardProps {
   testName: string;
   results: TrendDataPoint[];
+  /** Dashboard usage only — shows the pinned star + terracotta border. */
+  pinned?: boolean;
 }
 
-export default function TrendCard({ testName, results }: TrendCardProps) {
+export default function TrendCard({ testName, results, pinned = false }: TrendCardProps) {
   const [expanded, setExpanded] = useState(false);
 
   const sorted = useMemo(
@@ -31,26 +33,47 @@ export default function TrendCard({ testName, results }: TrendCardProps) {
     [results],
   );
 
-  const latest = sorted[sorted.length - 1];
+  const latest = sorted[sorted.length - 1] as TrendDataPoint | undefined;
   const previous = sorted.length > 1 ? sorted[sorted.length - 2] : null;
-  const delta = previous ? latest.value - previous.value : null;
+  const delta = previous && latest ? latest.value - previous.value : null;
 
   const trendData = sorted.map((r) => ({ value: r.value, date: r.visit_date }));
-  const refLow = latest.ref_low ?? undefined;
-  const refHigh = latest.ref_high ?? undefined;
+  const refLow = latest?.ref_low ?? undefined;
+  const refHigh = latest?.ref_high ?? undefined;
+
+  // Dashboard widgets can be pinned to a test with zero matching results
+  // (nothing imported yet, or a name that no longer matches); the Labs page
+  // never renders a card without data, so this only shows up there.
+  if (!latest) {
+    return (
+      <div
+        className="rounded-xl border p-4 space-y-3"
+        style={{ backgroundColor: 'var(--bg-card)', borderColor: pinned ? 'var(--color-terracotta)' : 'var(--border-card)' }}
+      >
+        <h4 className="text-sm font-medium flex items-center gap-1" style={{ color: 'var(--color-text-primary)' }}>
+          {pinned && <span style={{ color: 'var(--color-terracotta)', fontSize: '10px' }}>★</span>}
+          {testName}
+        </h4>
+        <div className="flex items-center justify-center h-10 text-[11px]" style={{ color: 'var(--color-text-muted)' }}>
+          No data
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
       className="rounded-xl border p-4 space-y-3 cursor-pointer transition-colors hover:border-opacity-60"
       style={{
         backgroundColor: 'var(--bg-card)',
-        borderColor: 'var(--border-card)',
+        borderColor: pinned ? 'var(--color-terracotta)' : 'var(--border-card)',
       }}
       onClick={() => setExpanded((prev) => !prev)}
     >
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h4 className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>
+        <h4 className="text-sm font-medium flex items-center gap-1" style={{ color: 'var(--color-text-primary)' }}>
+          {pinned && <span style={{ color: 'var(--color-terracotta)', fontSize: '10px' }}>★</span>}
           {testName}
         </h4>
         <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>

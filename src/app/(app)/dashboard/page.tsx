@@ -9,11 +9,11 @@ import { useProfile } from '@/hooks/useProfile';
 import { useConditions } from '@/hooks/useConditions';
 import { useProviders } from '@/hooks/useProviders';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
-import { useLabStatData } from '@/hooks/useLabStatData';
 import { useCapabilities } from '@/hooks/useCapabilities';
 import { useDateRangeContext } from '@/components/shared/DateRangeContext';
 import { getVitalRange } from '@/lib/reference-ranges';
-import { getMetricDefinition, buildLabResultDefinition } from '@/lib/dashboard-metrics';
+import { getMetricDefinition } from '@/lib/dashboard-metrics';
+import { normalizeLabTestName } from '@/lib/lab-test-names';
 import type { Vital } from '@/lib/types';
 
 import DateRangeFilter from '@/components/shared/DateRangeFilter';
@@ -23,6 +23,7 @@ import EmptyState from '@/components/shared/EmptyState';
 import Skeleton from '@/components/shared/Skeleton';
 import FlagBadge from '@/components/shared/FlagBadge';
 import TrendLine from '@/components/labs/TrendLine';
+import TrendCard from '@/components/labs/TrendCard';
 import GettingStartedChecklist from '@/components/dashboard/GettingStartedChecklist';
 import DashboardCustomizer from '@/components/dashboard/DashboardCustomizer';
 import HealthSummaryCard from '@/components/dashboard/HealthSummaryCard';
@@ -149,12 +150,37 @@ export default function DashboardPage() {
       });
   }, [dashboardStats]);
 
-  // Collect lab test names from visible lab_result stats for the useLabStatData hook
-  const labTestNames = useMemo(
-    () => visibleStats.filter((s) => s.widget_type === 'lab_result').map((s) => s.metric_key),
-    [visibleStats],
-  );
-  const { labStatData } = useLabStatData(labTestNames);
+  // Full per-analyte history (all visits, not just a sparkline window) for
+  // TrendCard's expand-on-click view — same grouping listLabResults uses for
+  // widget matching, so a card and its expanded history never disagree.
+  // Grouped by normalizeLabTestName, NOT the raw string: that collapses
+  // presentation drift (whitespace, "HGB" vs "Hemoglobin") but deliberately
+  // keeps different assay methods (e.g. "Testosterone, Total" vs
+  // "...Total, MS") as distinct entries — see lab-test-names.ts.
+  const labTrendData = useMemo(() => {
+    const map = new Map<
+      string,
+      Array<{ value: number; visit_date: string; flag: string | null; ref_low: number | null; ref_high: number | null }>
+    >();
+    for (const visit of labVisits) {
+      for (const result of visit.lab_results) {
+        const key = normalizeLabTestName(result.test_name);
+        const group = map.get(key) ?? [];
+        group.push({
+          value: result.value,
+          visit_date: visit.visit_date,
+          flag: result.flag,
+          ref_low: result.reference_range_low,
+          ref_high: result.reference_range_high,
+        });
+        map.set(key, group);
+      }
+    }
+    for (const [, points] of map) {
+      points.sort((a, b) => new Date(a.visit_date).getTime() - new Date(b.visit_date).getTime());
+    }
+    return map;
+  }, [labVisits]);
 
   // Bridge DateRangeFilter (Date objects) <-> context (ISO strings)
   const dateFilterValue = useMemo(() => {
@@ -346,67 +372,16 @@ export default function DashboardPage() {
                   );
                 }
 
-                // Lab result stat card
-                const labData = labStatData.find((d) => d.testName === stat.metric_key);
-                const labDef = buildLabResultDefinition(stat.metric_key, labData?.unit ?? null);
-                const hasLabData = labData != null;
-                const labDisplayValue = hasLabData ? labDef.formatValue(labData.latestValue) : '\u2014';
-
+                // Lab result stat card — same clickable/expandable TrendCard
+                // the Labs/Trends page uses, so "click for full history" works
+                // identically in both places.
                 return (
-                  <div
+                  <TrendCard
                     key={stat.id}
-                    className="rounded-xl border p-5 flex flex-col gap-3"
-                    style={{
-                      backgroundColor: 'var(--bg-card)',
-                      borderColor: stat.pinned ? 'var(--color-terracotta)' : 'var(--border-card)',
-                    }}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-medium flex items-center gap-1 truncate" style={{ color: 'var(--color-text-muted)' }}>
-                        {stat.pinned && <span style={{ color: 'var(--color-terracotta)', fontSize: '10px' }}>★</span>}
-                        {labDef.label}
-                      </span>
-                      {hasLabData && labData.flag && (
-                        <FlagBadge flag={labData.flag} />
-                      )}
-                    </div>
-                    <div className="flex items-baseline gap-1.5">
-                      <span className="text-2xl font-bold font-mono" style={{ color: 'var(--color-text-primary)' }}>
-                        {labDisplayValue}
-                      </span>
-                      {hasLabData && labDef.displayUnit && (
-                        <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-                          {labDef.displayUnit}
-                        </span>
-                      )}
-                    </div>
-                    {hasLabData && labData.sparklineData.length > 1 ? (
-                      <TrendLine
-                        data={labData.sparklineData}
-                        refLow={labData.refLow ?? undefined}
-                        refHigh={labData.refHigh ?? undefined}
-                        width={160}
-                        height={40}
-                      />
-                    ) : (
-                      <div className="flex items-center justify-center h-10 text-[11px]" style={{ color: 'var(--color-text-muted)' }}>
-                        {hasLabData ? 'Not enough data for trend' : 'No data'}
-                      </div>
-                    )}
-                    {hasLabData && labData.refLow != null && labData.refHigh != null ? (
-                      <RangeIndicator
-                        value={labData.latestValue}
-                        low={labData.refLow}
-                        high={labData.refHigh}
-                        unit={labDef.displayUnit}
-                        label=""
-                      />
-                    ) : hasLabData ? (
-                      <p className="text-[11px] font-mono" style={{ color: 'var(--color-text-muted)' }}>
-                        ref: not available
-                      </p>
-                    ) : null}
-                  </div>
+                    testName={stat.metric_key}
+                    results={labTrendData.get(normalizeLabTestName(stat.metric_key)) ?? []}
+                    pinned={stat.pinned}
+                  />
                 );
               })}
         </div>
