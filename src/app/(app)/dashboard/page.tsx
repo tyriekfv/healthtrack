@@ -2,6 +2,7 @@
 
 import { useMemo, useCallback, useState } from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { useVitals } from '@/hooks/useVitals';
 import { useMedications } from '@/hooks/useMedications';
 import { useLabResults } from '@/hooks/useLabResults';
@@ -57,18 +58,30 @@ function getLatestVitalData(vitals: Vital[], metricKey: string) {
   return { latest, sparklineData };
 }
 
-const FREQ_LABELS: Record<string, string> = {
-  once_daily: 'Once daily',
-  twice_daily: 'Twice daily',
-  three_times_daily: '3x daily',
-  four_times_daily: '4x daily',
-  every_other_day: 'Every other day',
-  weekly: 'Weekly',
-  biweekly: 'Biweekly',
-  monthly: 'Monthly',
-  as_needed: 'As needed',
-  other: 'Other',
-};
+/** Maps the stored snake_case frequency enum to its translated label. Shared
+ *  key names with medication.frequency.* so Medications/AddMedForm can reuse
+ *  this same lookup when they're extracted next. */
+function useFrequencyLabel() {
+  const t = useTranslations('medication.frequency');
+  return useCallback(
+    (freq: string): string => {
+      switch (freq) {
+        case 'once_daily': return t('onceDaily');
+        case 'twice_daily': return t('twiceDaily');
+        case 'three_times_daily': return t('threeTimesDaily');
+        case 'four_times_daily': return t('fourTimesDaily');
+        case 'every_other_day': return t('everyOtherDay');
+        case 'weekly': return t('weekly');
+        case 'biweekly': return t('biweekly');
+        case 'monthly': return t('monthly');
+        case 'as_needed': return t('asNeeded');
+        case 'other': return t('other');
+        default: return freq;
+      }
+    },
+    [t],
+  );
+}
 
 // ---------------------------------------------------------------------------
 // Sub-components
@@ -113,6 +126,9 @@ function LabFlagRowSkeleton() {
 // ---------------------------------------------------------------------------
 
 export default function DashboardPage() {
+  const t = useTranslations('dashboard');
+  const tCommon = useTranslations('common');
+  const freqLabel = useFrequencyLabel();
   const { capabilities } = useCapabilities();
   const { dateRange, setDateRange } = useDateRangeContext();
   const { vitals, loading: vitalsLoading, error: vitalsError } = useVitals({
@@ -223,7 +239,7 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
-          Dashboard
+          {t('title')}
         </h1>
         {capabilities?.ai !== false && (
         <Link
@@ -245,7 +261,7 @@ export default function DashboardPage() {
               d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          Quick Query
+          {t('quickQuery')}
         </Link>
         )}
       </div>
@@ -281,7 +297,7 @@ export default function DashboardPage() {
       <section>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text-primary)' }}>
-            Quick Stats
+            {t('quickStats')}
           </h2>
           <button
             type="button"
@@ -293,7 +309,7 @@ export default function DashboardPage() {
               <circle cx="12" cy="12" r="3" />
               <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
             </svg>
-            Customize
+            {t('customize')}
           </button>
         </div>
 
@@ -360,13 +376,13 @@ export default function DashboardPage() {
                         <TrendLine data={sparklineData} refLow={range?.low ?? undefined} refHigh={range?.high} width={160} height={40} />
                       ) : (
                         <div className="flex items-center justify-center h-10 text-[11px]" style={{ color: 'var(--color-text-muted)' }}>
-                          {hasData ? 'Not enough data for trend' : 'No data'}
+                          {hasData ? t('noTrendData') : t('noData')}
                         </div>
                       )}
                       {hasData && range ? (
                         <RangeIndicator value={latest.value} displayValue={displayValue} low={range.low} high={range.high} unit={range.unit} label={range.label} />
                       ) : hasData ? (
-                        <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>Set up your profile for reference ranges</p>
+                        <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{t('setupProfileForRanges')}</p>
                       ) : null}
                     </div>
                   );
@@ -398,8 +414,8 @@ export default function DashboardPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5" />
                 </svg>
               }
-              title="No vitals recorded yet"
-              description="Connect a device or manually log vitals to see your health trends here."
+              title={t('noVitalsTitle')}
+              description={t('noVitalsDescription')}
             />
           </div>
         )}
@@ -410,16 +426,16 @@ export default function DashboardPage() {
             style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-card)' }}
           >
             <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-              All stats are hidden.{' '}
+              {t('allStatsHidden')}{' '}
               <button
                 type="button"
                 onClick={() => setCustomizerOpen(true)}
                 className="font-medium cursor-pointer"
                 style={{ color: 'var(--color-sage)' }}
               >
-                Customize
+                {t('customize')}
               </button>{' '}
-              to show stats on your dashboard.
+              {t('showStatsPrompt')}
             </p>
           </div>
         )}
@@ -431,14 +447,14 @@ export default function DashboardPage() {
         <section>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text-primary)' }}>
-              Active Medications
+              {t('activeMedications')}
             </h2>
             <Link
               href="/medications"
               className="text-xs font-medium no-underline"
               style={{ color: 'var(--color-sage)' }}
             >
-              View all
+              {tCommon('viewAll')}
             </Link>
           </div>
           <div
@@ -469,8 +485,8 @@ export default function DashboardPage() {
                     />
                   </svg>
                 }
-                title="No active medications"
-                description="Medications you add will appear here for quick reference."
+                title={t('noMedicationsTitle')}
+                description={t('noMedicationsDescription')}
               />
             ) : (
               <ul className="divide-y" style={{ borderColor: 'var(--border-card)' }}>
@@ -485,9 +501,9 @@ export default function DashboardPage() {
                           {med.name}
                         </p>
                         <p className="text-xs truncate" style={{ color: 'var(--color-text-muted)' }}>
-                          {[med.dosage, med.frequency ? (FREQ_LABELS[med.frequency] ?? med.frequency) : null]
+                          {[med.dosage, med.frequency ? freqLabel(med.frequency) : null]
                             .filter(Boolean)
-                            .join(' · ') || 'No details'}
+                            .join(' · ') || t('noDetails')}
                         </p>
                       </div>
                       {med.category && (
@@ -508,7 +524,7 @@ export default function DashboardPage() {
                       className="block text-center py-3 text-xs font-medium no-underline"
                       style={{ color: 'var(--color-sage)' }}
                     >
-                      +{medications.length - 5} more medications
+                      {t('moreMedications', { count: medications.length - 5 })}
                     </Link>
                   </li>
                 )}
@@ -521,14 +537,14 @@ export default function DashboardPage() {
         <section>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text-primary)' }}>
-              Recent Lab Flags
+              {t('recentLabFlags')}
             </h2>
             <Link
               href="/labs"
               className="text-xs font-medium no-underline"
               style={{ color: 'var(--color-sage)' }}
             >
-              View all
+              {tCommon('viewAll')}
             </Link>
           </div>
           <div
@@ -559,8 +575,8 @@ export default function DashboardPage() {
                     />
                   </svg>
                 }
-                title="No lab flags"
-                description="Flagged lab results will appear here when you upload lab reports."
+                title={t('noLabFlagsTitle')}
+                description={t('noLabFlagsDescription')}
               />
             ) : (
               <ul className="divide-y" style={{ borderColor: 'var(--border-card)' }}>
@@ -578,7 +594,10 @@ export default function DashboardPage() {
                           {result.value} {result.unit ?? ''}
                           {result.reference_range_low != null && result.reference_range_high != null && (
                             <span className="ml-2">
-                              (ref: {result.reference_range_low}&ndash;{result.reference_range_high})
+                              {t('refRange', {
+                                low: result.reference_range_low,
+                                high: result.reference_range_high,
+                              })}
                             </span>
                           )}
                         </p>

@@ -28,6 +28,42 @@
     "settings": "Settings",
     "logOut": "Log Out"
   },
+  "medication": {
+    "frequency": {
+      "onceDaily": "Once daily",
+      "twiceDaily": "Twice daily",
+      "threeTimesDaily": "3x daily",
+      "fourTimesDaily": "4x daily",
+      "everyOtherDay": "Every other day",
+      "weekly": "Weekly",
+      "biweekly": "Biweekly",
+      "monthly": "Monthly",
+      "asNeeded": "As needed",
+      "other": "Other"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "quickQuery": "Quick Query",
+    "quickStats": "Quick Stats",
+    "customize": "Customize",
+    "noTrendData": "Not enough data for trend",
+    "noData": "No data",
+    "setupProfileForRanges": "Set up your profile for reference ranges",
+    "noVitalsTitle": "No vitals recorded yet",
+    "noVitalsDescription": "Connect a device or manually log vitals to see your health trends here.",
+    "allStatsHidden": "All stats are hidden.",
+    "showStatsPrompt": "to show stats on your dashboard.",
+    "activeMedications": "Active Medications",
+    "noMedicationsTitle": "No active medications",
+    "noMedicationsDescription": "Medications you add will appear here for quick reference.",
+    "noDetails": "No details",
+    "moreMedications": "+{count, plural, one {# more medication} other {# more medications}}",
+    "recentLabFlags": "Recent Lab Flags",
+    "noLabFlagsTitle": "No lab flags",
+    "noLabFlagsDescription": "Flagged lab results will appear here when you upload lab reports.",
+    "refRange": "(ref: {low}–{high})"
+  },
   "settings": {
     "title": "Settings",
     "language": "Language",

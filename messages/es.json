@@ -28,6 +28,42 @@
     "settings": "Configuración",
     "logOut": "Cerrar sesión"
   },
+  "medication": {
+    "frequency": {
+      "onceDaily": "Una vez al día",
+      "twiceDaily": "Dos veces al día",
+      "threeTimesDaily": "3 veces al día",
+      "fourTimesDaily": "4 veces al día",
+      "everyOtherDay": "Cada dos días",
+      "weekly": "Semanal",
+      "biweekly": "Quincenal",
+      "monthly": "Mensual",
+      "asNeeded": "Según sea necesario",
+      "other": "Otro"
+    }
+  },
+  "dashboard": {
+    "title": "Panel",
+    "quickQuery": "Consulta rápida",
+    "quickStats": "Estadísticas rápidas",
+    "customize": "Personalizar",
+    "noTrendData": "No hay suficientes datos para la tendencia",
+    "noData": "Sin datos",
+    "setupProfileForRanges": "Configura tu perfil para ver los rangos de referencia",
+    "noVitalsTitle": "Aún no hay signos vitales registrados",
+    "noVitalsDescription": "Conecta un dispositivo o registra tus signos vitales manualmente para ver tus tendencias de salud aquí.",
+    "allStatsHidden": "Todas las estadísticas están ocultas.",
+    "showStatsPrompt": "para mostrar estadísticas en tu panel.",
+    "activeMedications": "Medicamentos activos",
+    "noMedicationsTitle": "No hay medicamentos activos",
+    "noMedicationsDescription": "Los medicamentos que agregues aparecerán aquí para referencia rápida.",
+    "noDetails": "Sin detalles",
+    "moreMedications": "+{count, plural, one {# medicamento más} other {# medicamentos más}}",
+    "recentLabFlags": "Alertas de laboratorio recientes",
+    "noLabFlagsTitle": "No hay alertas de laboratorio",
+    "noLabFlagsDescription": "Los resultados de laboratorio marcados aparecerán aquí cuando subas informes de laboratorio.",
+    "refRange": "(ref: {low}–{high})"
+  },
   "settings": {
     "title": "Configuración",
     "language": "Idioma",
