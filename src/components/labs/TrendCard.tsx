@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import FlagBadge from '@/components/shared/FlagBadge';
 import TrendLine from './TrendLine';
 import LabTrendChart from './LabTrendChart';
@@ -22,6 +23,7 @@ interface TrendCardProps {
 }
 
 export default function TrendCard({ testName, results, pinned = false }: TrendCardProps) {
+  const t = useTranslations('labs.trendCard');
   const [expanded, setExpanded] = useState(false);
 
   const sorted = useMemo(
@@ -55,7 +57,7 @@ export default function TrendCard({ testName, results, pinned = false }: TrendCa
           {testName}
         </h4>
         <div className="flex items-center justify-center h-10 text-[11px]" style={{ color: 'var(--color-text-muted)' }}>
-          No data
+          {t('noData')}
         </div>
       </div>
     );
@@ -77,7 +79,7 @@ export default function TrendCard({ testName, results, pinned = false }: TrendCa
           {testName}
         </h4>
         <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-          {sorted.length} reading{sorted.length !== 1 ? 's' : ''}
+          {t('readingsCount', { count: sorted.length })}
         </span>
       </div>
 
@@ -149,25 +151,25 @@ export default function TrendCard({ testName, results, pinned = false }: TrendCa
                   className="text-left px-3 py-2 font-medium"
                   style={{ color: 'var(--color-text-muted)' }}
                 >
-                  Date
+                  {t('dateHeader')}
                 </th>
                 <th
                   className="text-left px-3 py-2 font-medium"
                   style={{ color: 'var(--color-text-muted)' }}
                 >
-                  Value
+                  {t('valueHeader')}
                 </th>
                 <th
                   className="text-left px-3 py-2 font-medium"
                   style={{ color: 'var(--color-text-muted)' }}
                 >
-                  Range
+                  {t('rangeHeader')}
                 </th>
                 <th
                   className="text-left px-3 py-2 font-medium"
                   style={{ color: 'var(--color-text-muted)' }}
                 >
-                  Flag
+                  {t('flagHeader')}
                 </th>
               </tr>
             </thead>
