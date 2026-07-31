@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Fraunces, Nunito, JetBrains_Mono } from 'next/font/google';
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getMessages } from 'next-intl/server';
 import './globals.css';
 
 const fraunces = Fraunces({
@@ -52,18 +54,23 @@ export const viewport: Viewport = {
   maximumScale: 1,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang="en" className={`${fraunces.variable} ${nunito.variable} ${jetbrainsMono.variable} h-full`}>
+    <html lang={locale} className={`${fraunces.variable} ${nunito.variable} ${jetbrainsMono.variable} h-full`}>
       <body className="min-h-full flex flex-col bg-bg-primary text-text-primary font-[family-name:var(--font-nunito)]">
         <a href="#main-content" className="skip-to-content">
           Skip to content
         </a>
-        {children}
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          {children}
+        </NextIntlClientProvider>
       </body>
     </html>
   );

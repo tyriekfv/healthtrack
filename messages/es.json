@@ -1,0 +1,38 @@
+{
+  "common": {
+    "loading": "Cargando…",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "saving": "Guardando…",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "add": "Agregar",
+    "close": "Cerrar",
+    "viewAll": "Ver todo",
+    "notMedicalAdvice": "No es un consejo médico."
+  },
+  "nav": {
+    "dashboard": "Panel",
+    "medications": "Medicamentos",
+    "labs": "Laboratorios",
+    "vitals": "Signos vitales",
+    "fitness": "Actividad física",
+    "cycleTracking": "Seguimiento de ciclo",
+    "conditions": "Condiciones",
+    "allergies": "Alergias",
+    "procedures": "Procedimientos",
+    "vaccines": "Vacunas",
+    "appointments": "Citas",
+    "notes": "Notas",
+    "query": "Consulta",
+    "settings": "Configuración",
+    "logOut": "Cerrar sesión"
+  },
+  "settings": {
+    "title": "Configuración",
+    "language": "Idioma",
+    "languageDescription": "Elige el idioma en el que se muestra HealthTrack.",
+    "languageEnglish": "English",
+    "languageSpanish": "Español"
+  }
+}
