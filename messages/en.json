@@ -33,6 +33,44 @@
     "language": "Language",
     "languageDescription": "Choose the language HealthTrack displays in.",
     "languageEnglish": "English",
-    "languageSpanish": "Español"
+    "languageSpanish": "Español",
+    "sections": {
+      "profileTitle": "Profile",
+      "profileDescription": "Manage your personal information, date of birth, and biological details.",
+      "providersTitle": "Providers",
+      "providersDescription": "Manage your healthcare providers and their contact information.",
+      "familyTitle": "Family & Dependents",
+      "familyDescription": "Manage family members and dependents whose health data you track.",
+      "importHistoryTitle": "Import Medical History",
+      "importHistoryDescription": "Upload a doctor-provided medical-history PDF to extract and import records for you or a dependent.",
+      "connectedSourcesTitle": "Connected Sources",
+      "connectedSourcesDescription": "Manage wearable and health data integrations like Oura Ring.",
+      "invitesTitle": "Invites",
+      "invitesDescription": "Create single-use invite links so family members can register on this instance.",
+      "delegateTitle": "Delegate Access",
+      "delegateDescription": "Grant other adults account-level access to view or manage your health data.",
+      "apiAccessTitle": "API Access",
+      "apiAccessDescription": "Generate tokens to access your health data from external apps and scripts.",
+      "healthSharingTitle": "Health Sharing",
+      "healthSharingDescription": "Share your health data with family members, caregivers, or providers.",
+      "dataExportTitle": "Data Export",
+      "dataExportDescription": "Export your health data as a JSON file for personal backup.",
+      "pdfExportTitle": "PDF Health Summary",
+      "pdfExportDescription": "Download a formatted PDF health summary to share with doctors offline.",
+      "dangerZoneTitle": "Danger Zone",
+      "dangerZoneDescription": "Permanently delete your account and all associated health data."
+    },
+    "dangerZone": {
+      "warning": "Once you delete your account, all of your data will be permanently removed. This action cannot be undone.",
+      "deleteButton": "Delete Account"
+    },
+    "deleteModal": {
+      "title": "Delete Account",
+      "warning": "This will permanently delete your account and all associated health data. This action <b>cannot</b> be undone.",
+      "confirmPrompt": "Type <b>DELETE</b> to confirm:",
+      "confirmButton": "Delete My Account",
+      "deleting": "Deleting…",
+      "genericError": "Failed to delete account"
+    }
   }
 }

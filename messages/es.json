@@ -33,6 +33,44 @@
     "language": "Idioma",
     "languageDescription": "Elige el idioma en el que se muestra HealthTrack.",
     "languageEnglish": "English",
-    "languageSpanish": "Español"
+    "languageSpanish": "Español",
+    "sections": {
+      "profileTitle": "Perfil",
+      "profileDescription": "Administra tu información personal, fecha de nacimiento y datos biológicos.",
+      "providersTitle": "Proveedores",
+      "providersDescription": "Administra tus proveedores de atención médica y su información de contacto.",
+      "familyTitle": "Familia y dependientes",
+      "familyDescription": "Administra los familiares y dependientes cuyos datos de salud registras.",
+      "importHistoryTitle": "Importar historial médico",
+      "importHistoryDescription": "Sube un PDF de historial médico proporcionado por un médico para extraer e importar registros para ti o un dependiente.",
+      "connectedSourcesTitle": "Fuentes conectadas",
+      "connectedSourcesDescription": "Administra integraciones de dispositivos portátiles y datos de salud como Oura Ring.",
+      "invitesTitle": "Invitaciones",
+      "invitesDescription": "Crea enlaces de invitación de un solo uso para que los familiares puedan registrarse en esta instancia.",
+      "delegateTitle": "Acceso delegado",
+      "delegateDescription": "Otorga a otros adultos acceso a nivel de cuenta para ver o administrar tus datos de salud.",
+      "apiAccessTitle": "Acceso a la API",
+      "apiAccessDescription": "Genera tokens para acceder a tus datos de salud desde aplicaciones y scripts externos.",
+      "healthSharingTitle": "Compartir información de salud",
+      "healthSharingDescription": "Comparte tus datos de salud con familiares, cuidadores o proveedores.",
+      "dataExportTitle": "Exportar datos",
+      "dataExportDescription": "Exporta tus datos de salud como un archivo JSON para respaldo personal.",
+      "pdfExportTitle": "Resumen de salud en PDF",
+      "pdfExportDescription": "Descarga un resumen de salud en PDF con formato para compartir con médicos sin conexión.",
+      "dangerZoneTitle": "Zona de peligro",
+      "dangerZoneDescription": "Elimina permanentemente tu cuenta y todos los datos de salud asociados."
+    },
+    "dangerZone": {
+      "warning": "Una vez que elimines tu cuenta, todos tus datos se eliminarán permanentemente. Esta acción no se puede deshacer.",
+      "deleteButton": "Eliminar cuenta"
+    },
+    "deleteModal": {
+      "title": "Eliminar cuenta",
+      "warning": "Esto eliminará permanentemente tu cuenta y todos los datos de salud asociados. Esta acción <b>no</b> se puede deshacer.",
+      "confirmPrompt": "Escribe <b>DELETE</b> para confirmar:",
+      "confirmButton": "Eliminar mi cuenta",
+      "deleting": "Eliminando…",
+      "genericError": "No se pudo eliminar la cuenta"
+    }
   }
 }

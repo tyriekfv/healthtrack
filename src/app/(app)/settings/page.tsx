@@ -2,6 +2,7 @@
 
 import { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { ProfileForm } from '@/components/settings/ProfileForm';
 import { ProviderManagement } from '@/components/settings/ProviderManagement';
 import DataExportSection from '@/components/settings/DataExportSection';
@@ -13,6 +14,7 @@ import MedicalHistoryImport from '@/components/settings/MedicalHistoryImport';
 import DelegateManager from '@/components/settings/DelegateManager';
 import ApiKeyManager from '@/components/settings/ApiKeyManager';
 import InviteManager from '@/components/settings/InviteManager';
+import LanguageSwitcher from '@/components/settings/LanguageSwitcher';
 import { useCapabilities } from '@/hooks/useCapabilities';
 import { useSession } from '@/lib/auth/client';
 import { useRouter } from 'next/navigation';
@@ -96,11 +98,17 @@ function SettingsSection({
 // Delete-account confirmation modal
 // ---------------------------------------------------------------------------
 function DeleteAccountModal({ onClose }: { onClose: () => void }) {
+  const t = useTranslations('settings.deleteModal');
+  const tCommon = useTranslations('common');
   const [confirmText, setConfirmText] = useState('');
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
+  // Intentionally not translated/localized: the confirmation word must match
+  // this exact literal in every language (see messages/*.json's deleteModal
+  // — "DELETE" is embedded verbatim in the <b> tag on purpose, not a mistake
+  // by whoever translates it).
   const confirmed = confirmText === 'DELETE';
 
   async function handleDelete() {
@@ -112,15 +120,13 @@ function DeleteAccountModal({ onClose }: { onClose: () => void }) {
       const res = await fetch('/api/account/delete', { method: 'POST' });
       if (!res.ok) {
         const body = (await res.json().catch(() => null)) as { error?: string } | null;
-        throw new Error(body?.error ?? 'Failed to delete account');
+        throw new Error(body?.error ?? t('genericError'));
       }
 
       // Server already destroyed the session and expired the cookie.
       router.push('/login');
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Failed to delete account',
-      );
+      setError(err instanceof Error ? err.message : t('genericError'));
       setDeleting(false);
     }
   }
@@ -135,15 +141,15 @@ function DeleteAccountModal({ onClose }: { onClose: () => void }) {
         style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--color-terracotta)' }}
       >
         <h3 className="text-lg font-semibold" style={{ color: 'var(--color-terracotta)' }}>
-          Delete Account
+          {t('title')}
         </h3>
         <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-          This will permanently delete your account and all associated health
-          data. This action <strong style={{ color: 'var(--color-terracotta)' }}>cannot</strong>{' '}
-          be undone.
+          {t.rich('warning', {
+            b: (chunks) => <strong style={{ color: 'var(--color-terracotta)' }}>{chunks}</strong>,
+          })}
         </p>
         <p className="text-sm" style={{ color: 'var(--color-text-primary)' }}>
-          Type <strong>DELETE</strong> to confirm:
+          {t.rich('confirmPrompt', { b: (chunks) => <strong>{chunks}</strong> })}
         </p>
         <input
           type="text"
@@ -179,7 +185,7 @@ function DeleteAccountModal({ onClose }: { onClose: () => void }) {
             style={{ color: 'var(--color-text-muted)' }}
             type="button"
           >
-            Cancel
+            {tCommon('cancel')}
           </button>
           <button
             onClick={handleDelete}
@@ -191,7 +197,7 @@ function DeleteAccountModal({ onClose }: { onClose: () => void }) {
             }}
             type="button"
           >
-            {deleting ? 'Deleting…' : 'Delete My Account'}
+            {deleting ? t('deleting') : t('confirmButton')}
           </button>
         </div>
       </div>
@@ -203,6 +209,8 @@ function DeleteAccountModal({ onClose }: { onClose: () => void }) {
 // Settings page
 // ---------------------------------------------------------------------------
 function SettingsContent() {
+  const t = useTranslations('settings');
+  const s = useTranslations('settings.sections');
   const { capabilities } = useCapabilities();
   const { data: session } = useSession();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -216,40 +224,32 @@ function SettingsContent() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
-        Settings
+        {t('title')}
       </h1>
 
       {/* Profile */}
-      <SettingsSection
-        title="Profile"
-        description="Manage your personal information, date of birth, and biological details."
-        defaultOpen
-      >
+      <SettingsSection title={s('profileTitle')} description={s('profileDescription')} defaultOpen>
         <ProfileForm />
       </SettingsSection>
 
+      {/* Language */}
+      <SettingsSection title={t('language')} description={t('languageDescription')}>
+        <LanguageSwitcher />
+      </SettingsSection>
+
       {/* Providers */}
-      <SettingsSection
-        title="Providers"
-        description="Manage your healthcare providers and their contact information."
-      >
+      <SettingsSection title={s('providersTitle')} description={s('providersDescription')}>
         <ProviderManagement />
       </SettingsSection>
 
       {/* Family & Dependents */}
-      <SettingsSection
-        title="Family & Dependents"
-        description="Manage family members and dependents whose health data you track."
-      >
+      <SettingsSection title={s('familyTitle')} description={s('familyDescription')}>
         <DependentManager />
       </SettingsSection>
 
       {/* Import Medical History — hidden when the instance has no AI configured */}
       {capabilities?.ai !== false && (
-        <SettingsSection
-          title="Import Medical History"
-          description="Upload a doctor-provided medical-history PDF to extract and import records for you or a dependent."
-        >
+        <SettingsSection title={s('importHistoryTitle')} description={s('importHistoryDescription')}>
           <MedicalHistoryImport />
         </SettingsSection>
       )}
@@ -257,8 +257,8 @@ function SettingsContent() {
       {/* Connected Sources — hidden when the instance has no Oura app configured */}
       {capabilities?.oura !== false && (
         <SettingsSection
-          title="Connected Sources"
-          description="Manage wearable and health data integrations like Oura Ring."
+          title={s('connectedSourcesTitle')}
+          description={s('connectedSourcesDescription')}
           defaultOpen={hasOuraParam}
         >
           <OuraConnectCard />
@@ -267,64 +267,45 @@ function SettingsContent() {
 
       {/* Invites — admin only (registration is invite-only by default) */}
       {isAdmin && (
-        <SettingsSection
-          title="Invites"
-          description="Create single-use invite links so family members can register on this instance."
-        >
+        <SettingsSection title={s('invitesTitle')} description={s('invitesDescription')}>
           <InviteManager />
         </SettingsSection>
       )}
 
       {/* Delegate Access */}
-      <SettingsSection
-        title="Delegate Access"
-        description="Grant other adults account-level access to view or manage your health data."
-      >
+      <SettingsSection title={s('delegateTitle')} description={s('delegateDescription')}>
         <DelegateManager />
       </SettingsSection>
 
       {/* API Access */}
-      <SettingsSection
-        title="API Access"
-        description="Generate tokens to access your health data from external apps and scripts."
-      >
+      <SettingsSection title={s('apiAccessTitle')} description={s('apiAccessDescription')}>
         <ApiKeyManager />
       </SettingsSection>
 
       {/* Health Sharing */}
-      <SettingsSection
-        title="Health Sharing"
-        description="Share your health data with family members, caregivers, or providers."
-      >
+      <SettingsSection title={s('healthSharingTitle')} description={s('healthSharingDescription')}>
         <HealthShareManager />
       </SettingsSection>
 
       {/* Data Export */}
-      <SettingsSection
-        title="Data Export"
-        description="Export your health data as a JSON file for personal backup."
-      >
+      <SettingsSection title={s('dataExportTitle')} description={s('dataExportDescription')}>
         <DataExportSection />
       </SettingsSection>
 
       {/* PDF Export */}
-      <SettingsSection
-        title="PDF Health Summary"
-        description="Download a formatted PDF health summary to share with doctors offline."
-      >
+      <SettingsSection title={s('pdfExportTitle')} description={s('pdfExportDescription')}>
         <PdfExportSection />
       </SettingsSection>
 
       {/* Danger Zone */}
       <SettingsSection
-        title="Danger Zone"
-        description="Permanently delete your account and all associated health data."
+        title={s('dangerZoneTitle')}
+        description={s('dangerZoneDescription')}
         borderColor="#991B1B"
       >
         <div className="space-y-4">
           <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-            Once you delete your account, all of your data will be permanently
-            removed. This action cannot be undone.
+            {t('dangerZone.warning')}
           </p>
           <button
             onClick={() => setShowDeleteModal(true)}
@@ -336,7 +317,7 @@ function SettingsContent() {
             }}
             type="button"
           >
-            Delete Account
+            {t('dangerZone.deleteButton')}
           </button>
         </div>
       </SettingsSection>
