@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import type { InteractionAlert as InteractionAlertType } from '@/lib/types';
 
 interface InteractionAlertProps {
@@ -31,19 +32,34 @@ const SEVERITY_STYLES: Record<string, { border: string; bg: string; badgeColor: 
 
 // Snooze durations offered per severity. Warnings/critical cap at a week so a
 // real interaction can't be hidden for a month (mirrors the server-side cap).
-const SNOOZE_OPTIONS: { label: string; days: number }[] = [
-  { label: '1 day', days: 1 },
-  { label: '1 week', days: 7 },
-  { label: '30 days', days: 30 },
-];
+const SNOOZE_DAYS = [1, 7, 30] as const;
 
-function snoozeOptionsFor(severity: string) {
-  return severity === 'info' ? SNOOZE_OPTIONS : SNOOZE_OPTIONS.filter((o) => o.days <= 7);
+function snoozeDaysFor(severity: string): readonly number[] {
+  return severity === 'info' ? SNOOZE_DAYS : SNOOZE_DAYS.filter((d) => d <= 7);
 }
 
 export default function InteractionAlert({ alert, onSnooze }: InteractionAlertProps) {
+  const t = useTranslations('medications.alert');
   const [hidden, setHidden] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const snoozeLabel = (days: number): string => {
+    switch (days) {
+      case 1: return t('day1');
+      case 7: return t('week1');
+      case 30: return t('days30');
+      default: return String(days);
+    }
+  };
+
+  const severityLabel = (severity: string): string => {
+    switch (severity) {
+      case 'info': return t('severity.info');
+      case 'warning': return t('severity.warning');
+      case 'critical': return t('severity.critical');
+      default: return severity;
+    }
+  };
 
   if (hidden) return null;
 
@@ -60,7 +76,7 @@ export default function InteractionAlert({ alert, onSnooze }: InteractionAlertPr
       className="rounded-xl border p-4 flex items-start gap-3"
       style={{ backgroundColor: styles.bg, borderColor: styles.border }}
       role="alert"
-      aria-label={`${alert.severity} medication interaction alert`}
+      aria-label={t('ariaLabel', { severity: alert.severity })}
     >
       {/* Warning icon */}
       <svg
@@ -86,7 +102,7 @@ export default function InteractionAlert({ alert, onSnooze }: InteractionAlertPr
           className="inline-block text-xs font-medium px-2 py-0.5 rounded-full uppercase mb-1"
           style={{ color: styles.badgeColor, backgroundColor: styles.badgeBg }}
         >
-          {alert.severity}
+          {severityLabel(alert.severity)}
         </span>
 
         <p className="text-sm mt-1" style={{ color: 'var(--color-text-primary)' }}>
@@ -103,9 +119,9 @@ export default function InteractionAlert({ alert, onSnooze }: InteractionAlertPr
           style={{ color: 'var(--color-text-muted)' }}
           aria-haspopup="menu"
           aria-expanded={menuOpen}
-          aria-label="Snooze alert"
+          aria-label={t('snoozeAriaLabel')}
         >
-          Snooze
+          {t('snooze')}
           <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
           </svg>
@@ -117,16 +133,16 @@ export default function InteractionAlert({ alert, onSnooze }: InteractionAlertPr
             className="absolute right-0 mt-1 z-10 rounded-lg border py-1 min-w-[7rem] shadow-lg"
             style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-card)' }}
           >
-            {snoozeOptionsFor(alert.severity).map((opt) => (
+            {snoozeDaysFor(alert.severity).map((days) => (
               <button
-                key={opt.days}
+                key={days}
                 type="button"
                 role="menuitem"
-                onClick={() => handleSnooze(opt.days)}
+                onClick={() => handleSnooze(days)}
                 className="block w-full text-left px-3 py-1.5 text-xs hover:opacity-80 cursor-pointer"
                 style={{ color: 'var(--color-text-primary)' }}
               >
-                {opt.label}
+                {snoozeLabel(days)}
               </button>
             ))}
           </div>

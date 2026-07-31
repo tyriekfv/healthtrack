@@ -28,6 +28,75 @@
     "settings": "Configuración",
     "logOut": "Cerrar sesión"
   },
+  "medications": {
+    "title": "Medicamentos",
+    "addMedication": "Agregar medicamento",
+    "newMedication": "Nuevo medicamento",
+    "statusFilterLabel": "Filtro de estado del medicamento",
+    "tabActive": "activos",
+    "tabPast": "pasados",
+    "loadingLabel": "Cargando medicamentos",
+    "noActiveTitle": "No hay medicamentos activos",
+    "noPastTitle": "No hay medicamentos pasados",
+    "noActiveDescription": "Agrega tus medicamentos actuales para hacer seguimiento de dosis, interacciones y recargas.",
+    "noPastDescription": "Los medicamentos pasados aparecerán aquí cuando los marques como inactivos.",
+    "interactions": {
+      "activeCount": "{count, plural, one {# interacción activa} other {# interacciones activas}}",
+      "snoozedSuffix": "{count, plural, one {, # pospuesta} other {, # pospuestas}}",
+      "noActiveSnoozed": "Sin interacciones activas — {count, plural, one {# pospuesta} other {# pospuestas}}",
+      "noneFound": "✓ No se encontraron interacciones entre tus medicamentos activos",
+      "notCheckedYet": "Las interacciones aún no se han verificado",
+      "checkedSuffix": "verificado {date}",
+      "checking": "Verificando…",
+      "checkAgain": "Verificar de nuevo",
+      "checkInteractions": "Verificar interacciones"
+    },
+    "card": {
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "started": "Iniciado {date}",
+      "ended": "Finalizado {date}",
+      "prescriberOnFile": "Prescriptor registrado",
+      "edit": "Editar",
+      "editAriaLabel": "Editar {name}",
+      "cardAriaLabel": "Tarjeta del medicamento {name}",
+      "editingAriaLabel": "Editando {name}",
+      "editMedication": "Editar medicamento",
+      "saveChanges": "Guardar cambios"
+    },
+    "alert": {
+      "snooze": "Posponer",
+      "snoozeAriaLabel": "Posponer alerta",
+      "ariaLabel": "Alerta de interacción medicamentosa: {severity}",
+      "day1": "1 día",
+      "week1": "1 semana",
+      "days30": "30 días",
+      "severity": {
+        "info": "Información",
+        "warning": "Advertencia",
+        "critical": "Crítico"
+      }
+    },
+    "form": {
+      "ariaLabel": "Formulario de medicamento",
+      "nameLabel": "Nombre",
+      "namePlaceholder": "Buscar medicamentos...",
+      "duplicateWarning": "Ya existe un medicamento con este nombre en tu lista de activos.",
+      "dosageLabel": "Dosis",
+      "dosagePlaceholder": "p. ej. 10mg",
+      "frequencyLabel": "Frecuencia",
+      "categoryLabel": "Categoría",
+      "categoryPlaceholder": "p. ej. Presión arterial, Antibiótico",
+      "prescriberLabel": "Prescriptor",
+      "startDateLabel": "Fecha de inicio",
+      "endDateLabel": "Fecha de finalización",
+      "endDateHint": "(dejar en blanco si aún lo tomas)",
+      "statusLabel": "Estado",
+      "notesLabel": "Notas",
+      "notesPlaceholder": "Notas adicionales...",
+      "saving": "Guardando..."
+    }
+  },
   "medication": {
     "frequency": {
       "onceDaily": "Una vez al día",

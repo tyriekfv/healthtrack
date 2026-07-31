@@ -28,6 +28,75 @@
     "settings": "Settings",
     "logOut": "Log Out"
   },
+  "medications": {
+    "title": "Medications",
+    "addMedication": "Add Medication",
+    "newMedication": "New Medication",
+    "statusFilterLabel": "Medication status filter",
+    "tabActive": "active",
+    "tabPast": "past",
+    "loadingLabel": "Loading medications",
+    "noActiveTitle": "No active medications",
+    "noPastTitle": "No past medications",
+    "noActiveDescription": "Add your current medications to track dosages, interactions, and refills.",
+    "noPastDescription": "Past medications will appear here when you mark them as inactive.",
+    "interactions": {
+      "activeCount": "{count, plural, one {# active interaction} other {# active interactions}}",
+      "snoozedSuffix": "{count, plural, one {, # snoozed} other {, # snoozed}}",
+      "noActiveSnoozed": "No active interactions — {count, plural, one {# snoozed} other {# snoozed}}",
+      "noneFound": "✓ No interactions found among your active medications",
+      "notCheckedYet": "Interactions haven't been checked yet",
+      "checkedSuffix": "checked {date}",
+      "checking": "Checking…",
+      "checkAgain": "Check again",
+      "checkInteractions": "Check interactions"
+    },
+    "card": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "started": "Started {date}",
+      "ended": "Ended {date}",
+      "prescriberOnFile": "Prescriber on file",
+      "edit": "Edit",
+      "editAriaLabel": "Edit {name}",
+      "cardAriaLabel": "{name} medication card",
+      "editingAriaLabel": "Editing {name}",
+      "editMedication": "Edit Medication",
+      "saveChanges": "Save Changes"
+    },
+    "alert": {
+      "snooze": "Snooze",
+      "snoozeAriaLabel": "Snooze alert",
+      "ariaLabel": "{severity} medication interaction alert",
+      "day1": "1 day",
+      "week1": "1 week",
+      "days30": "30 days",
+      "severity": {
+        "info": "Info",
+        "warning": "Warning",
+        "critical": "Critical"
+      }
+    },
+    "form": {
+      "ariaLabel": "Medication form",
+      "nameLabel": "Name",
+      "namePlaceholder": "Search medications...",
+      "duplicateWarning": "A medication with this name already exists in your active list.",
+      "dosageLabel": "Dosage",
+      "dosagePlaceholder": "e.g. 10mg",
+      "frequencyLabel": "Frequency",
+      "categoryLabel": "Category",
+      "categoryPlaceholder": "e.g. Blood Pressure, Antibiotic",
+      "prescriberLabel": "Prescriber",
+      "startDateLabel": "Start Date",
+      "endDateLabel": "End Date",
+      "endDateHint": "(leave blank if still taking)",
+      "statusLabel": "Status",
+      "notesLabel": "Notes",
+      "notesPlaceholder": "Additional notes...",
+      "saving": "Saving..."
+    }
+  },
   "medication": {
     "frequency": {
       "onceDaily": "Once daily",

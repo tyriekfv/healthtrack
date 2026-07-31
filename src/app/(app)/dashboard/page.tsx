@@ -3,6 +3,7 @@
 import { useMemo, useCallback, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import { useFrequencyLabel } from '@/hooks/useFrequencyLabel';
 import { useVitals } from '@/hooks/useVitals';
 import { useMedications } from '@/hooks/useMedications';
 import { useLabResults } from '@/hooks/useLabResults';
@@ -56,31 +57,6 @@ function getLatestVitalData(vitals: Vital[], metricKey: string) {
   }));
 
   return { latest, sparklineData };
-}
-
-/** Maps the stored snake_case frequency enum to its translated label. Shared
- *  key names with medication.frequency.* so Medications/AddMedForm can reuse
- *  this same lookup when they're extracted next. */
-function useFrequencyLabel() {
-  const t = useTranslations('medication.frequency');
-  return useCallback(
-    (freq: string): string => {
-      switch (freq) {
-        case 'once_daily': return t('onceDaily');
-        case 'twice_daily': return t('twiceDaily');
-        case 'three_times_daily': return t('threeTimesDaily');
-        case 'four_times_daily': return t('fourTimesDaily');
-        case 'every_other_day': return t('everyOtherDay');
-        case 'weekly': return t('weekly');
-        case 'biweekly': return t('biweekly');
-        case 'monthly': return t('monthly');
-        case 'as_needed': return t('asNeeded');
-        case 'other': return t('other');
-        default: return freq;
-      }
-    },
-    [t],
-  );
 }
 
 // ---------------------------------------------------------------------------

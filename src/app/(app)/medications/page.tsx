@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useMedications } from '@/hooks/useMedications';
 import { useInteractionAlerts } from '@/hooks/useInteractionAlerts';
 import { useCapabilities } from '@/hooks/useCapabilities';
@@ -18,6 +19,7 @@ function formatCheckDate(iso: string): string {
 }
 
 export default function MedicationsPage() {
+  const t = useTranslations('medications');
   const [tab, setTab] = useState<'active' | 'past'>('active');
   const [showAddForm, setShowAddForm] = useState(false);
   const { medications, loading, error, addMedication, updateMedication } = useMedications();
@@ -96,7 +98,7 @@ export default function MedicationsPage() {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-4">
         <h1 className="text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
-          Medications
+          {t('title')}
         </h1>
         {!showAddForm && (
           <button
@@ -105,7 +107,7 @@ export default function MedicationsPage() {
             className="px-5 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer"
             style={{ background: 'linear-gradient(135deg, var(--color-terracotta), var(--color-terracotta-light))', color: 'white', boxShadow: '0 4px 14px rgba(224, 122, 95, 0.3)' }}
           >
-            Add Medication
+            {t('addMedication')}
           </button>
         )}
       </div>
@@ -125,15 +127,20 @@ export default function MedicationsPage() {
             style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-card)' }}
           >
             <span style={{ color: 'var(--color-text-muted)' }}>
-              {interactionAlerts.length > 0
-                ? `${interactionAlerts.length} active interaction${interactionAlerts.length !== 1 ? 's' : ''}${snoozedCount > 0 ? `, ${snoozedCount} snoozed` : ''}`
-                : snoozedCount > 0
-                  ? `No active interactions — ${snoozedCount} snoozed`
-                  : interactionStatus
-                    ? '✓ No interactions found among your active medications'
-                    : 'Interactions haven’t been checked yet'}
+              {interactionAlerts.length > 0 ? (
+                <>
+                  {t('interactions.activeCount', { count: interactionAlerts.length })}
+                  {snoozedCount > 0 && t('interactions.snoozedSuffix', { count: snoozedCount })}
+                </>
+              ) : snoozedCount > 0 ? (
+                t('interactions.noActiveSnoozed', { count: snoozedCount })
+              ) : interactionStatus ? (
+                t('interactions.noneFound')
+              ) : (
+                t('interactions.notCheckedYet')
+              )}
               {interactionStatus && (
-                <span> · checked {formatCheckDate(interactionStatus.checked_at)}</span>
+                <span> · {t('interactions.checkedSuffix', { date: formatCheckDate(interactionStatus.checked_at) })}</span>
               )}
             </span>
             <button
@@ -143,7 +150,11 @@ export default function MedicationsPage() {
               className="text-sm font-medium underline hover:opacity-80 disabled:opacity-50 cursor-pointer shrink-0"
               style={{ color: 'var(--color-sage)' }}
             >
-              {checking ? 'Checking…' : interactionStatus ? 'Check again' : 'Check interactions'}
+              {checking
+                ? t('interactions.checking')
+                : interactionStatus
+                  ? t('interactions.checkAgain')
+                  : t('interactions.checkInteractions')}
             </button>
           </div>
         </div>
@@ -156,7 +167,7 @@ export default function MedicationsPage() {
           style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-card)' }}
         >
           <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--color-text-primary)' }}>
-            New Medication
+            {t('newMedication')}
           </h2>
           <AddMedForm
             onSubmit={handleAdd}
@@ -167,22 +178,22 @@ export default function MedicationsPage() {
       )}
 
       {/* Active / Past toggle */}
-      <div className="flex gap-2" role="tablist" aria-label="Medication status filter">
-        {(['active', 'past'] as const).map((t) => (
+      <div className="flex gap-2" role="tablist" aria-label={t('statusFilterLabel')}>
+        {(['active', 'past'] as const).map((tabKey) => (
           <button
-            key={t}
-            onClick={() => setTab(t)}
+            key={tabKey}
+            onClick={() => setTab(tabKey)}
             role="tab"
-            aria-selected={tab === t}
+            aria-selected={tab === tabKey}
             aria-controls="medications-list"
             className="px-4 py-2 rounded-lg text-sm font-medium transition-colors capitalize cursor-pointer"
             style={{
-              backgroundColor: tab === t ? 'var(--color-sage)' : 'var(--bg-card)',
-              color: tab === t ? 'var(--bg-primary)' : 'var(--color-text-muted)',
-              border: tab === t ? 'none' : '1px solid #1E2642',
+              backgroundColor: tab === tabKey ? 'var(--color-sage)' : 'var(--bg-card)',
+              color: tab === tabKey ? 'var(--bg-primary)' : 'var(--color-text-muted)',
+              border: tab === tabKey ? 'none' : '1px solid #1E2642',
             }}
           >
-            {t} ({t === 'active' ? activeMeds.length : pastMeds.length})
+            {tabKey === 'active' ? t('tabActive') : t('tabPast')} ({tabKey === 'active' ? activeMeds.length : pastMeds.length})
           </button>
         ))}
       </div>
@@ -200,7 +211,7 @@ export default function MedicationsPage() {
 
       {/* Loading skeletons */}
       {loading && (
-        <div className="space-y-4" aria-busy="true" aria-label="Loading medications">
+        <div className="space-y-4" aria-busy="true" aria-label={t('loadingLabel')}>
           <Skeleton variant="card" />
           <Skeleton variant="card" />
           <Skeleton variant="card" />
@@ -234,18 +245,18 @@ export default function MedicationsPage() {
                 }
                 title={
                   tab === 'active'
-                    ? 'No active medications'
-                    : 'No past medications'
+                    ? t('noActiveTitle')
+                    : t('noPastTitle')
                 }
                 description={
                   tab === 'active'
-                    ? 'Add your current medications to track dosages, interactions, and refills.'
-                    : 'Past medications will appear here when you mark them as inactive.'
+                    ? t('noActiveDescription')
+                    : t('noPastDescription')
                 }
                 action={
                   tab === 'active'
                     ? {
-                        label: 'Add Medication',
+                        label: t('addMedication'),
                         onClick: () => setShowAddForm(true),
                       }
                     : undefined
