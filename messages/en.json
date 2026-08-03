@@ -28,6 +28,40 @@
     "settings": "Settings",
     "logOut": "Log Out"
   },
+  "conditions": {
+    "title": "Conditions",
+    "addCondition": "Add Condition",
+    "filterAriaLabel": "Filter conditions by status",
+    "statusAll": "All",
+    "status": {
+      "active": "Active",
+      "resolved": "Resolved",
+      "managed": "Managed",
+      "monitoring": "Monitoring"
+    },
+    "loadingLabel": "Loading conditions",
+    "noConditionsTitle": "No conditions tracked yet",
+    "noStatusConditionsTitle": "No {status} conditions",
+    "noConditionsDescription": "Track your health conditions along with their status and related providers.",
+    "noStatusConditionsDescription": "You have no conditions with status \"{status}\".",
+    "form": {
+      "nameLabel": "Name",
+      "namePlaceholder": "Search conditions (e.g. Sleep Apnea)...",
+      "statusLabel": "Status",
+      "diagnosedDateLabel": "Diagnosed Date",
+      "providerLabel": "Provider",
+      "notesLabel": "Notes",
+      "notesPlaceholder": "Any additional notes...",
+      "adding": "Adding..."
+    },
+    "card": {
+      "diagnosed": "Diagnosed: {date}",
+      "editAriaLabel": "Edit condition {name}",
+      "notes": "Notes",
+      "changeStatusAriaLabel": "Change condition status",
+      "changeStatusSr": "Change status"
+    }
+  },
   "labs": {
     "title": "Lab Results",
     "uploadLabReport": "Upload Lab Report",

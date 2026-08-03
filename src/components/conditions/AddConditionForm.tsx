@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 import { conditionSchema, type ConditionFormValues } from '@/lib/validations';
 import { ProviderPicker } from '@/components/shared/ProviderPicker';
 import { MedicalAutocomplete } from '@/components/shared/MedicalAutocomplete';
@@ -14,6 +15,8 @@ interface AddConditionFormProps {
 }
 
 export default function AddConditionForm({ onSubmit, onCancel }: AddConditionFormProps) {
+  const t = useTranslations('conditions');
+  const tCommon = useTranslations('common');
   const [providerId, setProviderId] = useState<string | null>(null);
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -54,12 +57,12 @@ export default function AddConditionForm({ onSubmit, onCancel }: AddConditionFor
       style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-card)' }}
     >
       <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--color-text-primary)' }}>
-        Add Condition
+        {t('addCondition')}
       </h2>
 
       <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
         <MedicalAutocomplete
-          label="Name"
+          label={t('form.nameLabel')}
           value={watch('name')}
           code={icd10Code}
           onChange={(val, code) => {
@@ -67,7 +70,7 @@ export default function AddConditionForm({ onSubmit, onCancel }: AddConditionFor
             setIcd10Code(code);
           }}
           searchFn={searchConditions}
-          placeholder="Search conditions (e.g. Sleep Apnea)..."
+          placeholder={t('form.namePlaceholder')}
           required
           error={errors.name?.message}
           id="condition-name"
@@ -75,7 +78,7 @@ export default function AddConditionForm({ onSubmit, onCancel }: AddConditionFor
 
         <div>
           <label htmlFor="condition-status" className="block text-sm font-medium mb-1" style={{ color: 'var(--color-text-primary)' }}>
-            Status
+            {t('form.statusLabel')}
           </label>
           <select
             id="condition-status"
@@ -83,16 +86,16 @@ export default function AddConditionForm({ onSubmit, onCancel }: AddConditionFor
             className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none"
             style={{ backgroundColor: 'var(--bg-primary)', borderColor: 'var(--border-card)', color: 'var(--color-text-primary)' }}
           >
-            <option value="active">Active</option>
-            <option value="resolved">Resolved</option>
-            <option value="managed">Managed</option>
-            <option value="monitoring">Monitoring</option>
+            <option value="active">{t('status.active')}</option>
+            <option value="resolved">{t('status.resolved')}</option>
+            <option value="managed">{t('status.managed')}</option>
+            <option value="monitoring">{t('status.monitoring')}</option>
           </select>
         </div>
 
         <div>
           <label htmlFor="condition-diagnosed-date" className="block text-sm font-medium mb-1" style={{ color: 'var(--color-text-primary)' }}>
-            Diagnosed Date
+            {t('form.diagnosedDateLabel')}
           </label>
           <input
             id="condition-diagnosed-date"
@@ -113,19 +116,19 @@ export default function AddConditionForm({ onSubmit, onCancel }: AddConditionFor
         <ProviderPicker
           value={providerId}
           onChange={setProviderId}
-          label="Provider"
+          label={t('form.providerLabel')}
         />
 
         <div>
           <label htmlFor="condition-notes" className="block text-sm font-medium mb-1" style={{ color: 'var(--color-text-primary)' }}>
-            Notes
+            {t('form.notesLabel')}
           </label>
           <textarea
             id="condition-notes"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             rows={3}
-            placeholder="Any additional notes..."
+            placeholder={t('form.notesPlaceholder')}
             className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none resize-none"
             style={{ backgroundColor: 'var(--bg-primary)', borderColor: 'var(--border-card)', color: 'var(--color-text-primary)' }}
           />
@@ -138,7 +141,7 @@ export default function AddConditionForm({ onSubmit, onCancel }: AddConditionFor
             className="px-5 py-2 rounded-lg text-sm font-medium disabled:opacity-50"
             style={{ background: 'linear-gradient(135deg, var(--color-terracotta), var(--color-terracotta-light))', color: 'white', boxShadow: '0 4px 14px rgba(224, 122, 95, 0.3)' }}
           >
-            {submitting ? 'Adding...' : 'Add Condition'}
+            {submitting ? t('form.adding') : t('addCondition')}
           </button>
           {onCancel && (
             <button
@@ -147,7 +150,7 @@ export default function AddConditionForm({ onSubmit, onCancel }: AddConditionFor
               className="px-5 py-2 rounded-lg border text-sm font-medium"
               style={{ border: '2px solid var(--color-soft-peach)', color: 'var(--color-bark)', backgroundColor: 'var(--color-cream)' }}
             >
-              Cancel
+              {tCommon('cancel')}
             </button>
           )}
         </div>

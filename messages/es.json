@@ -28,6 +28,40 @@
     "settings": "Configuración",
     "logOut": "Cerrar sesión"
   },
+  "conditions": {
+    "title": "Condiciones",
+    "addCondition": "Agregar condición",
+    "filterAriaLabel": "Filtrar condiciones por estado",
+    "statusAll": "Todas",
+    "status": {
+      "active": "Activa",
+      "resolved": "Resuelta",
+      "managed": "Controlada",
+      "monitoring": "En observación"
+    },
+    "loadingLabel": "Cargando condiciones",
+    "noConditionsTitle": "Aún no hay condiciones registradas",
+    "noStatusConditionsTitle": "No hay condiciones: {status}",
+    "noConditionsDescription": "Registra tus condiciones de salud junto con su estado y los proveedores relacionados.",
+    "noStatusConditionsDescription": "No tienes condiciones con el estado \"{status}\".",
+    "form": {
+      "nameLabel": "Nombre",
+      "namePlaceholder": "Buscar condiciones (p. ej. Apnea del sueño)...",
+      "statusLabel": "Estado",
+      "diagnosedDateLabel": "Fecha de diagnóstico",
+      "providerLabel": "Proveedor",
+      "notesLabel": "Notas",
+      "notesPlaceholder": "Notas adicionales...",
+      "adding": "Agregando..."
+    },
+    "card": {
+      "diagnosed": "Diagnosticada: {date}",
+      "editAriaLabel": "Editar condición {name}",
+      "notes": "Notas",
+      "changeStatusAriaLabel": "Cambiar estado de la condición",
+      "changeStatusSr": "Cambiar estado"
+    }
+  },
   "labs": {
     "title": "Resultados de laboratorio",
     "uploadLabReport": "Subir informe de laboratorio",
