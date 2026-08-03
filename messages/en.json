@@ -97,6 +97,30 @@
       "saving": "Saving..."
     }
   },
+  "procedures": {
+    "title": "Procedures & Surgeries",
+    "addProcedure": "Add Procedure",
+    "newProcedure": "New Procedure",
+    "noProceduresTitle": "No procedures recorded",
+    "noProceduresDescription": "Track past surgeries and procedures to give AI a complete picture of your medical history.",
+    "card": {
+      "editProcedure": "Edit Procedure",
+      "saveChanges": "Save Changes",
+      "cptCode": "CPT: {code}",
+      "providerOnFile": "Provider on file",
+      "confirmYes": "Yes",
+      "confirmNo": "No"
+    },
+    "form": {
+      "nameLabel": "Procedure Name",
+      "namePlaceholder": "Search procedures (e.g. Cholecystectomy)...",
+      "dateLabel": "Date",
+      "providerLabel": "Provider",
+      "notesLabel": "Notes",
+      "notesPlaceholder": "Additional notes...",
+      "saving": "Saving..."
+    }
+  },
   "labs": {
     "title": "Lab Results",
     "uploadLabReport": "Upload Lab Report",

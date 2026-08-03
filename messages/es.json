@@ -97,6 +97,30 @@
       "saving": "Guardando..."
     }
   },
+  "procedures": {
+    "title": "Procedimientos y cirugías",
+    "addProcedure": "Agregar procedimiento",
+    "newProcedure": "Nuevo procedimiento",
+    "noProceduresTitle": "No hay procedimientos registrados",
+    "noProceduresDescription": "Registra cirugías y procedimientos pasados para darle a la IA una imagen completa de tu historial médico.",
+    "card": {
+      "editProcedure": "Editar procedimiento",
+      "saveChanges": "Guardar cambios",
+      "cptCode": "CPT: {code}",
+      "providerOnFile": "Proveedor registrado",
+      "confirmYes": "Sí",
+      "confirmNo": "No"
+    },
+    "form": {
+      "nameLabel": "Nombre del procedimiento",
+      "namePlaceholder": "Buscar procedimientos (p. ej. Colecistectomía)...",
+      "dateLabel": "Fecha",
+      "providerLabel": "Proveedor",
+      "notesLabel": "Notas",
+      "notesPlaceholder": "Notas adicionales...",
+      "saving": "Guardando..."
+    }
+  },
   "labs": {
     "title": "Resultados de laboratorio",
     "uploadLabReport": "Subir informe de laboratorio",
