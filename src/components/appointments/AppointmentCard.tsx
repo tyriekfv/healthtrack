@@ -8,7 +8,9 @@ import { appointmentSchema, type AppointmentFormValues } from '@/lib/validations
 import { ProviderPicker } from '@/components/shared/ProviderPicker';
 import type { Appointment } from '@/lib/types';
 
-const PROVIDER_TYPE_STYLE: Record<string, { color: string; bg: string }> = {
+type ProviderTypeKey = 'pcp' | 'specialist' | 'lab' | 'imaging' | 'urgent_care' | 'hospital' | 'pharmacy' | 'therapist' | 'dentist' | 'other';
+
+const PROVIDER_TYPE_STYLE: Record<ProviderTypeKey, { color: string; bg: string }> = {
   pcp: { color: 'var(--color-sage)', bg: 'rgba(74,222,128,0.15)' },
   specialist: { color: 'var(--accent-purple)', bg: 'rgba(167, 139, 250, 0.12)' },
   lab: { color: 'var(--color-sage)', bg: 'rgba(96,165,250,0.15)' },
@@ -20,6 +22,10 @@ const PROVIDER_TYPE_STYLE: Record<string, { color: string; bg: string }> = {
   dentist: { color: 'var(--color-sage)', bg: 'rgba(74,222,128,0.15)' },
   other: { color: 'var(--color-text-muted)', bg: 'rgba(139,149,176,0.15)' },
 };
+
+function isProviderTypeKey(value: string): value is ProviderTypeKey {
+  return value in PROVIDER_TYPE_STYLE;
+}
 
 interface AppointmentCardProps {
   appointment: Appointment;
@@ -53,9 +59,7 @@ export default function AppointmentCard({ appointment, onUpdate, providerName, p
 
   const isPast = new Date(appointment.appointment_date) < new Date();
 
-  const typeStyle = providerType && PROVIDER_TYPE_STYLE[providerType]
-    ? PROVIDER_TYPE_STYLE[providerType]
-    : null;
+  const typeKey = providerType && isProviderTypeKey(providerType) ? providerType : null;
 
   const {
     register,
@@ -200,12 +204,12 @@ export default function AppointmentCard({ appointment, onUpdate, providerName, p
             <h3 className="font-semibold text-base" style={{ color: 'var(--color-text-primary)' }}>
               {providerName ?? t('card.unknownProvider')}
             </h3>
-            {typeStyle && providerType && (
+            {typeKey && (
               <span
                 className="text-xs font-medium px-2 py-0.5 rounded-full"
-                style={{ color: typeStyle.color, backgroundColor: typeStyle.bg }}
+                style={{ color: PROVIDER_TYPE_STYLE[typeKey].color, backgroundColor: PROVIDER_TYPE_STYLE[typeKey].bg }}
               >
-                {t(`providerType.${providerType}`)}
+                {t(`providerType.${typeKey}`)}
               </span>
             )}
             <span
