@@ -121,6 +121,54 @@
       "saving": "Guardando..."
     }
   },
+  "appointments": {
+    "title": "Citas",
+    "addAppointment": "Agregar cita",
+    "filterAriaLabel": "Filtrar citas por fecha",
+    "filters": {
+      "upcoming": "Próximas",
+      "past": "Pasadas",
+      "all": "Todas"
+    },
+    "loadingLabel": "Cargando citas",
+    "noAppointmentsTitle": "Aún no hay citas",
+    "noUpcomingTitle": "No hay citas próximas",
+    "noPastTitle": "No hay citas pasadas",
+    "noAppointmentsDescription": "Lleva un registro de tus visitas al médico, seguimientos y próximas citas.",
+    "noUpcomingDescription": "No tienes citas próximas programadas.",
+    "noPastDescription": "No tienes registros de citas pasadas.",
+    "providerType": {
+      "pcp": "Atención primaria",
+      "specialist": "Especialista",
+      "lab": "Laboratorio",
+      "imaging": "Imagenología",
+      "urgent_care": "Atención de urgencia",
+      "hospital": "Hospital",
+      "pharmacy": "Farmacia",
+      "therapist": "Terapeuta",
+      "dentist": "Dentista",
+      "other": "Otro"
+    },
+    "card": {
+      "unknownProvider": "Proveedor desconocido",
+      "past": "Pasada",
+      "upcoming": "Próxima",
+      "followUp": "Seguimiento: {date}",
+      "editAriaLabel": "Editar cita con {provider}",
+      "notes": "Notas"
+    },
+    "form": {
+      "providerLabelRequired": "Proveedor *",
+      "providerLabel": "Proveedor",
+      "dateTimeLabel": "Fecha y hora",
+      "reasonLabel": "Motivo",
+      "reasonPlaceholder": "p. ej. Chequeo anual",
+      "notesLabel": "Notas",
+      "notesPlaceholder": "Notas adicionales...",
+      "followUpDateLabel": "Fecha de seguimiento",
+      "adding": "Agregando..."
+    }
+  },
   "labs": {
     "title": "Resultados de laboratorio",
     "uploadLabReport": "Subir informe de laboratorio",

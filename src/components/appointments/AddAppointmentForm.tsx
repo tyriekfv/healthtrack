@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 import { appointmentSchema, type AppointmentFormValues } from '@/lib/validations';
 import { ProviderPicker } from '@/components/shared/ProviderPicker';
 
@@ -12,6 +13,8 @@ interface AddAppointmentFormProps {
 }
 
 export default function AddAppointmentForm({ onSubmit, onCancel }: AddAppointmentFormProps) {
+  const t = useTranslations('appointments');
+  const tCommon = useTranslations('common');
   const [notes, setNotes] = useState('');
   const [followUpDate, setFollowUpDate] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -51,7 +54,7 @@ export default function AddAppointmentForm({ onSubmit, onCancel }: AddAppointmen
       style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-card)' }}
     >
       <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--color-text-primary)' }}>
-        Add Appointment
+        {t('addAppointment')}
       </h2>
 
       <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
@@ -59,7 +62,7 @@ export default function AddAppointmentForm({ onSubmit, onCancel }: AddAppointmen
           <ProviderPicker
             value={watch('provider_id') || null}
             onChange={(id) => setValue('provider_id', id ?? '', { shouldValidate: true })}
-            label="Provider *"
+            label={t('form.providerLabelRequired')}
           />
           {errors.provider_id && (
             <p className="text-xs mt-1" style={{ color: 'var(--color-terracotta)' }}>
@@ -70,7 +73,7 @@ export default function AddAppointmentForm({ onSubmit, onCancel }: AddAppointmen
 
         <div>
           <label htmlFor="appointment-date" className="block text-sm font-medium mb-1" style={{ color: 'var(--color-text-primary)' }}>
-            Date & Time <span style={{ color: 'var(--color-terracotta)' }}>*</span>
+            {t('form.dateTimeLabel')} <span style={{ color: 'var(--color-terracotta)' }}>*</span>
           </label>
           <input
             id="appointment-date"
@@ -90,13 +93,13 @@ export default function AddAppointmentForm({ onSubmit, onCancel }: AddAppointmen
 
         <div>
           <label htmlFor="appointment-reason" className="block text-sm font-medium mb-1" style={{ color: 'var(--color-text-primary)' }}>
-            Reason
+            {t('form.reasonLabel')}
           </label>
           <input
             id="appointment-reason"
             type="text"
             {...register('reason')}
-            placeholder="e.g. Annual checkup"
+            placeholder={t('form.reasonPlaceholder')}
             className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none"
             style={{ backgroundColor: 'var(--bg-primary)', borderColor: 'var(--border-card)', color: 'var(--color-text-primary)' }}
           />
@@ -109,14 +112,14 @@ export default function AddAppointmentForm({ onSubmit, onCancel }: AddAppointmen
 
         <div>
           <label htmlFor="appointment-notes" className="block text-sm font-medium mb-1" style={{ color: 'var(--color-text-primary)' }}>
-            Notes
+            {t('form.notesLabel')}
           </label>
           <textarea
             id="appointment-notes"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             rows={3}
-            placeholder="Any additional notes..."
+            placeholder={t('form.notesPlaceholder')}
             className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none resize-none"
             style={{ backgroundColor: 'var(--bg-primary)', borderColor: 'var(--border-card)', color: 'var(--color-text-primary)' }}
           />
@@ -124,7 +127,7 @@ export default function AddAppointmentForm({ onSubmit, onCancel }: AddAppointmen
 
         <div>
           <label htmlFor="appointment-followup" className="block text-sm font-medium mb-1" style={{ color: 'var(--color-text-primary)' }}>
-            Follow-up Date
+            {t('form.followUpDateLabel')}
           </label>
           <input
             id="appointment-followup"
@@ -143,7 +146,7 @@ export default function AddAppointmentForm({ onSubmit, onCancel }: AddAppointmen
             className="px-5 py-2 rounded-lg text-sm font-medium disabled:opacity-50"
             style={{ background: 'linear-gradient(135deg, var(--color-terracotta), var(--color-terracotta-light))', color: 'white', boxShadow: '0 4px 14px rgba(224, 122, 95, 0.3)' }}
           >
-            {submitting ? 'Adding...' : 'Add Appointment'}
+            {submitting ? t('form.adding') : t('addAppointment')}
           </button>
           {onCancel && (
             <button
@@ -152,7 +155,7 @@ export default function AddAppointmentForm({ onSubmit, onCancel }: AddAppointmen
               className="px-5 py-2 rounded-lg border text-sm font-medium"
               style={{ border: '2px solid var(--color-soft-peach)', color: 'var(--color-bark)', backgroundColor: 'var(--color-cream)' }}
             >
-              Cancel
+              {tCommon('cancel')}
             </button>
           )}
         </div>

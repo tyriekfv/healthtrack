@@ -121,6 +121,54 @@
       "saving": "Saving..."
     }
   },
+  "appointments": {
+    "title": "Appointments",
+    "addAppointment": "Add Appointment",
+    "filterAriaLabel": "Filter appointments by time",
+    "filters": {
+      "upcoming": "Upcoming",
+      "past": "Past",
+      "all": "All"
+    },
+    "loadingLabel": "Loading appointments",
+    "noAppointmentsTitle": "No appointments yet",
+    "noUpcomingTitle": "No upcoming appointments",
+    "noPastTitle": "No past appointments",
+    "noAppointmentsDescription": "Keep track of your doctor visits, follow-ups, and upcoming appointments.",
+    "noUpcomingDescription": "You have no upcoming appointments scheduled.",
+    "noPastDescription": "You have no past appointment records.",
+    "providerType": {
+      "pcp": "Primary Care",
+      "specialist": "Specialist",
+      "lab": "Lab",
+      "imaging": "Imaging",
+      "urgent_care": "Urgent Care",
+      "hospital": "Hospital",
+      "pharmacy": "Pharmacy",
+      "therapist": "Therapist",
+      "dentist": "Dentist",
+      "other": "Other"
+    },
+    "card": {
+      "unknownProvider": "Unknown Provider",
+      "past": "Past",
+      "upcoming": "Upcoming",
+      "followUp": "Follow-up: {date}",
+      "editAriaLabel": "Edit appointment with {provider}",
+      "notes": "Notes"
+    },
+    "form": {
+      "providerLabelRequired": "Provider *",
+      "providerLabel": "Provider",
+      "dateTimeLabel": "Date & Time",
+      "reasonLabel": "Reason",
+      "reasonPlaceholder": "e.g. Annual checkup",
+      "notesLabel": "Notes",
+      "notesPlaceholder": "Any additional notes...",
+      "followUpDateLabel": "Follow-up Date",
+      "adding": "Adding..."
+    }
+  },
   "labs": {
     "title": "Lab Results",
     "uploadLabReport": "Upload Lab Report",
