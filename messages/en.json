@@ -169,6 +169,66 @@
       "adding": "Adding..."
     }
   },
+  "notes": {
+    "title": "Notes & Symptoms",
+    "filterAriaLabel": "Filter notes by type",
+    "filters": {
+      "all": "All",
+      "symptom": "Symptoms",
+      "observation": "Observations",
+      "general": "General"
+    },
+    "noNotesTitle": "No notes yet",
+    "noTypeNotesTitle": "No {type} notes",
+    "noNotesDescription": "Record symptoms, side effects, and general health observations to share with your providers.",
+    "feedAriaLabel": "Notes feed",
+    "type": {
+      "general": "General",
+      "symptom": "Symptom",
+      "observation": "Observation"
+    },
+    "severity": {
+      "1": "Mild",
+      "2": "Mild-Moderate",
+      "3": "Moderate",
+      "4": "Moderate-Severe",
+      "5": "Severe",
+      "notSet": "Not set",
+      "label": "Severity: {value}",
+      "ariaLabel": "Severity {value} of 5",
+      "scaleMild": "1 - Mild",
+      "scaleModerate": "3 - Moderate",
+      "scaleSevere": "5 - Severe"
+    },
+    "form": {
+      "newNote": "New Note",
+      "ariaLabel": "Add a new note",
+      "typeLabel": "Type",
+      "contentLabel": "Content",
+      "contentPlaceholder": "Describe your symptom, observation, or note...",
+      "tagsLabel": "Tags (comma-separated)",
+      "tagsPlaceholder": "e.g., headache, fatigue, medication",
+      "dateTimeLabel": "Date & Time",
+      "adding": "Adding...",
+      "addNote": "Add Note"
+    },
+    "relativeTime": {
+      "justNow": "just now",
+      "minutesAgo": "{count, plural, one {# minute ago} other {# minutes ago}}",
+      "hoursAgo": "{count, plural, one {# hour ago} other {# hours ago}}",
+      "daysAgo": "{count, plural, one {# day ago} other {# days ago}}",
+      "monthsAgo": "{count, plural, one {# month ago} other {# months ago}}"
+    },
+    "card": {
+      "confirmDelete": "Delete?",
+      "confirmYes": "Yes",
+      "deleting": "Deleting...",
+      "confirmNo": "No",
+      "confirmDeleteAriaLabel": "Confirm delete",
+      "cancelDeleteAriaLabel": "Cancel delete",
+      "deleteAriaLabel": "Delete note from {date}"
+    }
+  },
   "labs": {
     "title": "Lab Results",
     "uploadLabReport": "Upload Lab Report",

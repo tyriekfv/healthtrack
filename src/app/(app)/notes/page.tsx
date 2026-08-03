@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useNotes } from '@/hooks/useNotes';
 import type { NoteType } from '@/lib/types';
 import NoteEntry from '@/components/notes/NoteEntry';
@@ -10,14 +11,10 @@ import LoadingSpinner from '@/components/shared/LoadingSpinner';
 
 type FilterTab = 'all' | NoteType;
 
-const FILTER_TABS: { value: FilterTab; label: string }[] = [
-  { value: 'all', label: 'All' },
-  { value: 'symptom', label: 'Symptoms' },
-  { value: 'observation', label: 'Observations' },
-  { value: 'general', label: 'General' },
-];
+const FILTER_TAB_VALUES: FilterTab[] = ['all', 'symptom', 'observation', 'general'];
 
 export default function NotesPage() {
+  const t = useTranslations('notes');
   const { notes, loading, error, addNote, deleteNote } = useNotes();
   const [activeFilter, setActiveFilter] = useState<FilterTab>('all');
 
@@ -49,7 +46,7 @@ export default function NotesPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
-        Notes &amp; Symptoms
+        {t('title')}
       </h1>
 
       {/* Note entry form */}
@@ -71,22 +68,22 @@ export default function NotesPage() {
       )}
 
       {/* Filter tabs */}
-      <div className="flex gap-1 overflow-x-auto" role="tablist" aria-label="Filter notes by type">
-        {FILTER_TABS.map((tab) => {
-          const isActive = activeFilter === tab.value;
+      <div className="flex gap-1 overflow-x-auto" role="tablist" aria-label={t('filterAriaLabel')}>
+        {FILTER_TAB_VALUES.map((value) => {
+          const isActive = activeFilter === value;
           return (
             <button
-              key={tab.value}
+              key={value}
               role="tab"
               aria-selected={isActive}
-              onClick={() => setActiveFilter(tab.value)}
+              onClick={() => setActiveFilter(value)}
               className="px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors cursor-pointer"
               style={{
                 backgroundColor: isActive ? 'var(--border-card)' : 'transparent',
                 color: isActive ? 'var(--color-text-primary)' : 'var(--color-text-muted)',
               }}
             >
-              {tab.label}
+              {t(`filters.${value}`)}
             </button>
           );
         })}
@@ -121,10 +118,10 @@ export default function NotesPage() {
             }
             title={
               activeFilter === 'all'
-                ? 'No notes yet'
-                : `No ${activeFilter} notes`
+                ? t('noNotesTitle')
+                : t('noTypeNotesTitle', { type: t(`filters.${activeFilter}`) })
             }
-            description="Record symptoms, side effects, and general health observations to share with your providers."
+            description={t('noNotesDescription')}
           />
         </div>
       ) : (

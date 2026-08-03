@@ -3,22 +3,22 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 import { noteSchema, type NoteFormValues } from '@/lib/validations';
 import type { NoteType } from '@/lib/types';
 
-const NOTE_TYPES: { value: NoteType; label: string }[] = [
-  { value: 'general', label: 'General' },
-  { value: 'symptom', label: 'Symptom' },
-  { value: 'observation', label: 'Observation' },
-];
+const NOTE_TYPE_VALUES: NoteType[] = ['general', 'symptom', 'observation'];
 
-const SEVERITY_LABELS: Record<number, string> = {
-  1: 'Mild',
-  2: 'Mild-Moderate',
-  3: 'Moderate',
-  4: 'Moderate-Severe',
-  5: 'Severe',
-};
+function severityLabel(t: ReturnType<typeof useTranslations>, value: number): string {
+  switch (value) {
+    case 1: return t('severity.1');
+    case 2: return t('severity.2');
+    case 3: return t('severity.3');
+    case 4: return t('severity.4');
+    case 5: return t('severity.5');
+    default: return String(value);
+  }
+}
 
 interface NoteEntryProps {
   onSubmit: (data: {
@@ -37,6 +37,7 @@ function toLocalDatetimeString(date: Date): string {
 }
 
 export default function NoteEntry({ onSubmit }: NoteEntryProps) {
+  const t = useTranslations('notes');
   const {
     register,
     handleSubmit,
@@ -85,20 +86,20 @@ export default function NoteEntry({ onSubmit }: NoteEntryProps) {
       onSubmit={handleSubmit(handleFormSubmit)}
       className="rounded-xl border p-5 space-y-4"
       style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-card)' }}
-      aria-label="Add a new note"
+      aria-label={t('form.ariaLabel')}
     >
       <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text-primary)' }}>
-        New Note
+        {t('form.newNote')}
       </h2>
 
       {/* Type selector pills */}
       <fieldset>
         <legend className="text-sm font-medium mb-2 block" style={{ color: 'var(--color-text-muted)' }}>
-          Type
+          {t('form.typeLabel')}
         </legend>
         <div className="flex gap-2">
-          {NOTE_TYPES.map((t) => {
-            const isActive = noteType === t.value;
+          {NOTE_TYPE_VALUES.map((value) => {
+            const isActive = noteType === value;
             const activeColors: Record<NoteType, string> = {
               symptom: 'var(--color-terracotta)',
               observation: 'var(--color-sage)',
@@ -106,18 +107,18 @@ export default function NoteEntry({ onSubmit }: NoteEntryProps) {
             };
             return (
               <button
-                key={t.value}
+                key={value}
                 type="button"
-                onClick={() => setValue('note_type', t.value)}
+                onClick={() => setValue('note_type', value)}
                 className="px-4 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer"
                 style={{
-                  backgroundColor: isActive ? `${activeColors[t.value]}20` : 'transparent',
-                  color: isActive ? activeColors[t.value] : 'var(--color-text-muted)',
-                  border: `1px solid ${isActive ? activeColors[t.value] : 'var(--border-card)'}`,
+                  backgroundColor: isActive ? `${activeColors[value]}20` : 'transparent',
+                  color: isActive ? activeColors[value] : 'var(--color-text-muted)',
+                  border: `1px solid ${isActive ? activeColors[value] : 'var(--border-card)'}`,
                 }}
                 aria-pressed={isActive}
               >
-                {t.label}
+                {t(`type.${value}`)}
               </button>
             );
           })}
@@ -131,7 +132,7 @@ export default function NoteEntry({ onSubmit }: NoteEntryProps) {
           className="text-sm font-medium mb-1 block"
           style={{ color: 'var(--color-text-muted)' }}
         >
-          Content
+          {t('form.contentLabel')}
         </label>
         <textarea
           id="note-content"
@@ -143,7 +144,7 @@ export default function NoteEntry({ onSubmit }: NoteEntryProps) {
             borderColor: errors.content ? 'var(--color-terracotta)' : 'var(--border-card)',
             color: 'var(--color-text-primary)',
           }}
-          placeholder="Describe your symptom, observation, or note..."
+          placeholder={t('form.contentPlaceholder')}
           aria-invalid={!!errors.content}
           aria-describedby={errors.content ? 'content-error' : undefined}
           maxLength={5000}
@@ -163,7 +164,7 @@ export default function NoteEntry({ onSubmit }: NoteEntryProps) {
             className="text-sm font-medium mb-1 block"
             style={{ color: 'var(--color-text-muted)' }}
           >
-            Severity: {severity ? `${severity} - ${SEVERITY_LABELS[severity]}` : 'Not set'}
+            {t('severity.label', { value: severity ? `${severity} - ${severityLabel(t, severity)}` : t('severity.notSet') })}
           </label>
           <input
             id="note-severity"
@@ -178,12 +179,12 @@ export default function NoteEntry({ onSubmit }: NoteEntryProps) {
             aria-valuemin={1}
             aria-valuemax={5}
             aria-valuenow={severity ?? 3}
-            aria-valuetext={severity ? SEVERITY_LABELS[severity] : 'Not set'}
+            aria-valuetext={severity ? severityLabel(t, severity) : t('severity.notSet')}
           />
           <div className="flex justify-between text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>
-            <span>1 - Mild</span>
-            <span>3 - Moderate</span>
-            <span>5 - Severe</span>
+            <span>{t('severity.scaleMild')}</span>
+            <span>{t('severity.scaleModerate')}</span>
+            <span>{t('severity.scaleSevere')}</span>
           </div>
         </div>
       )}
@@ -195,7 +196,7 @@ export default function NoteEntry({ onSubmit }: NoteEntryProps) {
           className="text-sm font-medium mb-1 block"
           style={{ color: 'var(--color-text-muted)' }}
         >
-          Tags (comma-separated)
+          {t('form.tagsLabel')}
         </label>
         <input
           id="note-tags"
@@ -208,7 +209,7 @@ export default function NoteEntry({ onSubmit }: NoteEntryProps) {
             borderColor: 'var(--border-card)',
             color: 'var(--color-text-primary)',
           }}
-          placeholder="e.g., headache, fatigue, medication"
+          placeholder={t('form.tagsPlaceholder')}
         />
       </div>
 
@@ -219,7 +220,7 @@ export default function NoteEntry({ onSubmit }: NoteEntryProps) {
           className="text-sm font-medium mb-1 block"
           style={{ color: 'var(--color-text-muted)' }}
         >
-          Date & Time
+          {t('form.dateTimeLabel')}
         </label>
         <input
           id="note-timestamp"
@@ -246,7 +247,7 @@ export default function NoteEntry({ onSubmit }: NoteEntryProps) {
           color: 'var(--color-bark)',
         }}
       >
-        {isSubmitting ? 'Adding...' : 'Add Note'}
+        {isSubmitting ? t('form.adding') : t('form.addNote')}
       </button>
     </form>
   );

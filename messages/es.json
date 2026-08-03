@@ -169,6 +169,66 @@
       "adding": "Agregando..."
     }
   },
+  "notes": {
+    "title": "Notas y síntomas",
+    "filterAriaLabel": "Filtrar notas por tipo",
+    "filters": {
+      "all": "Todas",
+      "symptom": "Síntomas",
+      "observation": "Observaciones",
+      "general": "General"
+    },
+    "noNotesTitle": "Aún no hay notas",
+    "noTypeNotesTitle": "No hay notas: {type}",
+    "noNotesDescription": "Registra síntomas, efectos secundarios y observaciones generales de salud para compartir con tus proveedores.",
+    "feedAriaLabel": "Feed de notas",
+    "type": {
+      "general": "General",
+      "symptom": "Síntoma",
+      "observation": "Observación"
+    },
+    "severity": {
+      "1": "Leve",
+      "2": "Leve-moderada",
+      "3": "Moderada",
+      "4": "Moderada-grave",
+      "5": "Grave",
+      "notSet": "Sin establecer",
+      "label": "Gravedad: {value}",
+      "ariaLabel": "Gravedad {value} de 5",
+      "scaleMild": "1 - Leve",
+      "scaleModerate": "3 - Moderada",
+      "scaleSevere": "5 - Grave"
+    },
+    "form": {
+      "newNote": "Nueva nota",
+      "ariaLabel": "Agregar una nueva nota",
+      "typeLabel": "Tipo",
+      "contentLabel": "Contenido",
+      "contentPlaceholder": "Describe tu síntoma, observación o nota...",
+      "tagsLabel": "Etiquetas (separadas por comas)",
+      "tagsPlaceholder": "p. ej., dolor de cabeza, fatiga, medicamento",
+      "dateTimeLabel": "Fecha y hora",
+      "adding": "Agregando...",
+      "addNote": "Agregar nota"
+    },
+    "relativeTime": {
+      "justNow": "justo ahora",
+      "minutesAgo": "{count, plural, one {hace # minuto} other {hace # minutos}}",
+      "hoursAgo": "{count, plural, one {hace # hora} other {hace # horas}}",
+      "daysAgo": "{count, plural, one {hace # día} other {hace # días}}",
+      "monthsAgo": "{count, plural, one {hace # mes} other {hace # meses}}"
+    },
+    "card": {
+      "confirmDelete": "¿Eliminar?",
+      "confirmYes": "Sí",
+      "deleting": "Eliminando...",
+      "confirmNo": "No",
+      "confirmDeleteAriaLabel": "Confirmar eliminación",
+      "cancelDeleteAriaLabel": "Cancelar eliminación",
+      "deleteAriaLabel": "Eliminar nota del {date}"
+    }
+  },
   "labs": {
     "title": "Resultados de laboratorio",
     "uploadLabReport": "Subir informe de laboratorio",
