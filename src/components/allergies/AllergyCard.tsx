@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import type { Allergy } from '@/lib/types';
 import AddAllergyForm, { type AddAllergyFormData } from './AddAllergyForm';
 
@@ -9,13 +10,6 @@ const SEVERITY_COLORS: Record<string, string> = {
   moderate: 'var(--color-warning)',
   severe: '#F97316',
   life_threatening: 'var(--color-terracotta)',
-};
-
-const SEVERITY_LABELS: Record<string, string> = {
-  mild: 'Mild',
-  moderate: 'Moderate',
-  severe: 'Severe',
-  life_threatening: 'Life-Threatening',
 };
 
 function formatDate(dateStr: string | null | undefined): string {
@@ -30,6 +24,8 @@ interface AllergyCardProps {
 }
 
 export default function AllergyCard({ allergy, onUpdate, onDelete }: AllergyCardProps) {
+  const t = useTranslations('allergies');
+  const tCommon = useTranslations('common');
   const [editing, setEditing] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
@@ -50,11 +46,11 @@ export default function AllergyCard({ allergy, onUpdate, onDelete }: AllergyCard
   if (editing) {
     return (
       <div className="rounded-xl border p-5" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-card)' }}>
-        <h3 className="text-sm font-semibold mb-4" style={{ color: 'var(--color-text-primary)' }}>Edit Allergy</h3>
+        <h3 className="text-sm font-semibold mb-4" style={{ color: 'var(--color-text-primary)' }}>{t('card.editAllergy')}</h3>
         <AddAllergyForm
           onSubmit={handleUpdate}
           onCancel={() => setEditing(false)}
-          submitLabel="Save Changes"
+          submitLabel={t('card.saveChanges')}
           initialValues={{
             name: allergy.name,
             severity: allergy.severity,
@@ -80,18 +76,18 @@ export default function AllergyCard({ allergy, onUpdate, onDelete }: AllergyCard
               className="text-xs px-2 py-0.5 rounded-full font-medium"
               style={{ backgroundColor: `${severityColor}20`, color: severityColor }}
             >
-              {SEVERITY_LABELS[allergy.severity] ?? allergy.severity}
+              {t(`severity.${allergy.severity}`)}
             </span>
           </div>
           {allergy.reaction && (
-            <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>Reaction: {allergy.reaction}</p>
+            <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>{t('card.reaction', { reaction: allergy.reaction })}</p>
           )}
           {allergy.diagnosed_date && (
-            <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>Diagnosed {formatDate(allergy.diagnosed_date)}</p>
+            <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>{t('card.diagnosed', { date: formatDate(allergy.diagnosed_date) })}</p>
           )}
           {allergy.rxcui && (
             <span className="text-xs px-2 py-0.5 rounded-full mt-2 inline-block" style={{ backgroundColor: 'var(--color-cream)', color: 'var(--color-sage)' }}>
-              RxCUI: {allergy.rxcui}
+              {t('card.rxcui', { rxcui: allergy.rxcui })}
             </span>
           )}
         </div>
@@ -102,7 +98,7 @@ export default function AllergyCard({ allergy, onUpdate, onDelete }: AllergyCard
             className="px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer"
             style={{ backgroundColor: 'var(--color-cream)', color: 'var(--color-sage)' }}
           >
-            Edit
+            {tCommon('edit')}
           </button>
           {confirmDelete ? (
             <div className="flex gap-1">
@@ -112,7 +108,7 @@ export default function AllergyCard({ allergy, onUpdate, onDelete }: AllergyCard
                 className="px-2 py-1 rounded text-xs font-medium cursor-pointer"
                 style={{ backgroundColor: 'var(--color-terracotta)', color: 'var(--color-bark)' }}
               >
-                Yes
+                {t('card.confirmYes')}
               </button>
               <button
                 type="button"
@@ -120,7 +116,7 @@ export default function AllergyCard({ allergy, onUpdate, onDelete }: AllergyCard
                 className="px-2 py-1 rounded text-xs font-medium cursor-pointer"
                 style={{ color: 'var(--color-text-muted)' }}
               >
-                No
+                {t('card.confirmNo')}
               </button>
             </div>
           ) : (
@@ -130,7 +126,7 @@ export default function AllergyCard({ allergy, onUpdate, onDelete }: AllergyCard
               className="px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer"
               style={{ backgroundColor: 'transparent', color: 'var(--color-terracotta)', border: '1px solid #F87171' }}
             >
-              Delete
+              {tCommon('delete')}
             </button>
           )}
         </div>

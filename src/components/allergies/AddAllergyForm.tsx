@@ -3,15 +3,16 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 import { allergySchema, type AllergyFormValues } from '@/lib/validations';
 import { MedicalAutocomplete } from '@/components/shared/MedicalAutocomplete';
 import { searchRxNorm } from '@/lib/medical-apis';
 
 const SEVERITY_OPTIONS = [
-  { value: 'mild', label: 'Mild', color: 'var(--color-sage)' },
-  { value: 'moderate', label: 'Moderate', color: 'var(--color-warning)' },
-  { value: 'severe', label: 'Severe', color: '#F97316' },
-  { value: 'life_threatening', label: 'Life-Threatening', color: 'var(--color-terracotta)' },
+  { value: 'mild', color: 'var(--color-sage)' },
+  { value: 'moderate', color: 'var(--color-warning)' },
+  { value: 'severe', color: '#F97316' },
+  { value: 'life_threatening', color: 'var(--color-terracotta)' },
 ] as const;
 
 export interface AddAllergyFormData {
@@ -34,8 +35,11 @@ export default function AddAllergyForm({
   onSubmit,
   onCancel,
   initialValues,
-  submitLabel = 'Add Allergy',
+  submitLabel,
 }: AddAllergyFormProps) {
+  const t = useTranslations('allergies');
+  const tCommon = useTranslations('common');
+  const resolvedSubmitLabel = submitLabel ?? t('addAllergy');
   const [submitting, setSubmitting] = useState(false);
   const [rxcui, setRxcui] = useState<string | null>(initialValues?.rxcui ?? null);
 
@@ -71,7 +75,7 @@ export default function AddAllergyForm({
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4" noValidate>
       <MedicalAutocomplete
-        label="Allergen"
+        label={t('form.allergenLabel')}
         value={watch('name')}
         code={rxcui}
         onChange={(val, code) => {
@@ -79,7 +83,7 @@ export default function AddAllergyForm({
           setRxcui(code);
         }}
         searchFn={searchRxNorm}
-        placeholder="Search drug or allergen name..."
+        placeholder={t('form.allergenPlaceholder')}
         required
         error={errors.name?.message}
         id="allergy-name"
@@ -87,7 +91,7 @@ export default function AddAllergyForm({
 
       <div>
         <label htmlFor="allergy-severity" className="block text-sm font-medium mb-1" style={labelStyle}>
-          Severity <span style={{ color: 'var(--color-terracotta)' }}>*</span>
+          {t('form.severityLabel')} <span style={{ color: 'var(--color-terracotta)' }}>*</span>
         </label>
         <select
           id="allergy-severity"
@@ -96,7 +100,7 @@ export default function AddAllergyForm({
           style={inputStyle}
         >
           {SEVERITY_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>{opt.label}</option>
+            <option key={opt.value} value={opt.value}>{t(`severity.${opt.value}`)}</option>
           ))}
         </select>
         {errors.severity && (
@@ -106,13 +110,13 @@ export default function AddAllergyForm({
 
       <div>
         <label htmlFor="allergy-reaction" className="block text-sm font-medium mb-1" style={labelStyle}>
-          Reaction
+          {t('form.reactionLabel')}
         </label>
         <input
           id="allergy-reaction"
           type="text"
           {...register('reaction')}
-          placeholder="e.g. Hives, anaphylaxis"
+          placeholder={t('form.reactionPlaceholder')}
           className="w-full px-3 py-2.5 rounded-xl border text-sm focus:outline-none"
           style={inputStyle}
         />
@@ -120,7 +124,7 @@ export default function AddAllergyForm({
 
       <div>
         <label htmlFor="allergy-date" className="block text-sm font-medium mb-1" style={labelStyle}>
-          Diagnosed Date
+          {t('form.diagnosedDateLabel')}
         </label>
         <input
           id="allergy-date"
@@ -133,13 +137,13 @@ export default function AddAllergyForm({
 
       <div>
         <label htmlFor="allergy-notes" className="block text-sm font-medium mb-1" style={labelStyle}>
-          Notes
+          {t('form.notesLabel')}
         </label>
         <textarea
           id="allergy-notes"
           {...register('notes')}
           rows={2}
-          placeholder="Additional notes..."
+          placeholder={t('form.notesPlaceholder')}
           className="w-full px-3 py-2.5 rounded-xl border text-sm focus:outline-none resize-none"
           style={inputStyle}
         />
@@ -152,7 +156,7 @@ export default function AddAllergyForm({
           className="px-5 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer disabled:opacity-50"
           style={{ background: 'linear-gradient(135deg, var(--color-terracotta), var(--color-terracotta-light))', color: 'white', boxShadow: '0 4px 14px rgba(224, 122, 95, 0.3)' }}
         >
-          {submitting ? 'Saving...' : submitLabel}
+          {submitting ? t('form.saving') : resolvedSubmitLabel}
         </button>
         {onCancel && (
           <button
@@ -161,7 +165,7 @@ export default function AddAllergyForm({
             className="px-5 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer"
             style={{ backgroundColor: 'transparent', color: 'var(--color-text-muted)', border: '1px solid var(--border-card)' }}
           >
-            Cancel
+            {tCommon('cancel')}
           </button>
         )}
       </div>

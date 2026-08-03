@@ -62,6 +62,41 @@
       "changeStatusSr": "Cambiar estado"
     }
   },
+  "allergies": {
+    "title": "Alergias",
+    "addAllergy": "Agregar alergia",
+    "newAllergy": "Nueva alergia",
+    "filterAll": "Todas",
+    "severity": {
+      "mild": "Leve",
+      "moderate": "Moderada",
+      "severe": "Grave",
+      "life_threatening": "Potencialmente mortal"
+    },
+    "noAllergiesTitle": "No hay alergias registradas",
+    "noSeverityAllergiesTitle": "No hay alergias: {severity}",
+    "noAllergiesDescription": "Registra tus alergias para ayudar a la IA a ofrecer recomendaciones de medicamentos y salud más seguras.",
+    "card": {
+      "editAllergy": "Editar alergia",
+      "saveChanges": "Guardar cambios",
+      "reaction": "Reacción: {reaction}",
+      "diagnosed": "Diagnosticada {date}",
+      "rxcui": "RxCUI: {rxcui}",
+      "confirmYes": "Sí",
+      "confirmNo": "No"
+    },
+    "form": {
+      "allergenLabel": "Alérgeno",
+      "allergenPlaceholder": "Buscar medicamento o alérgeno...",
+      "severityLabel": "Gravedad",
+      "reactionLabel": "Reacción",
+      "reactionPlaceholder": "p. ej. Urticaria, anafilaxia",
+      "diagnosedDateLabel": "Fecha de diagnóstico",
+      "notesLabel": "Notas",
+      "notesPlaceholder": "Notas adicionales...",
+      "saving": "Guardando..."
+    }
+  },
   "labs": {
     "title": "Resultados de laboratorio",
     "uploadLabReport": "Subir informe de laboratorio",

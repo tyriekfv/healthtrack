@@ -62,6 +62,41 @@
       "changeStatusSr": "Change status"
     }
   },
+  "allergies": {
+    "title": "Allergies",
+    "addAllergy": "Add Allergy",
+    "newAllergy": "New Allergy",
+    "filterAll": "All",
+    "severity": {
+      "mild": "Mild",
+      "moderate": "Moderate",
+      "severe": "Severe",
+      "life_threatening": "Life-Threatening"
+    },
+    "noAllergiesTitle": "No allergies recorded",
+    "noSeverityAllergiesTitle": "No {severity} allergies",
+    "noAllergiesDescription": "Track your allergies to help AI provide safer medication and health recommendations.",
+    "card": {
+      "editAllergy": "Edit Allergy",
+      "saveChanges": "Save Changes",
+      "reaction": "Reaction: {reaction}",
+      "diagnosed": "Diagnosed {date}",
+      "rxcui": "RxCUI: {rxcui}",
+      "confirmYes": "Yes",
+      "confirmNo": "No"
+    },
+    "form": {
+      "allergenLabel": "Allergen",
+      "allergenPlaceholder": "Search drug or allergen name...",
+      "severityLabel": "Severity",
+      "reactionLabel": "Reaction",
+      "reactionPlaceholder": "e.g. Hives, anaphylaxis",
+      "diagnosedDateLabel": "Diagnosed Date",
+      "notesLabel": "Notes",
+      "notesPlaceholder": "Additional notes...",
+      "saving": "Saving..."
+    }
+  },
   "labs": {
     "title": "Lab Results",
     "uploadLabReport": "Upload Lab Report",
