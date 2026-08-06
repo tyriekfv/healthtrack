@@ -5,7 +5,10 @@ name: CI
 
 on:
   push:
-    branches: [main, base]
+    # TEMPORARY: fix/lab-query-history-and-normalization added so CI runs
+    # directly on push (no PR-create permission in this environment). Remove
+    # before merging to main.
+    branches: [main, base, fix/lab-query-history-and-normalization]
   pull_request:
 
 concurrency:
