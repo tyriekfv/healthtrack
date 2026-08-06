@@ -163,3 +163,4 @@ HealthTrack helps you **organize** health information. It is **not a medical dev
 ## License
 
 [MIT](LICENSE)
+<!-- ci-trigger-test: safe to remove, added to diagnose a stalled push-triggered CI run -->
