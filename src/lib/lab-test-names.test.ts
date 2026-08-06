@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { normalizeLabTestName } from './lab-test-names';
+import { canonicalLabTestName, normalizeLabTestName } from './lab-test-names';
 
 describe('normalizeLabTestName', () => {
   it.each([
@@ -36,5 +36,38 @@ describe('normalizeLabTestName', () => {
     expect(normalizeLabTestName('  TESTOSTERONE,\u00a0TOTAL  ')).toBe(
       normalizeLabTestName('testosterone total'),
     );
+  });
+});
+
+describe('canonicalLabTestName', () => {
+  it.each([
+    ['HGB', 'Hemoglobin'],
+    ['Hgb', 'Hemoglobin'],
+    ['HCT, Auto', 'Hematocrit'],
+    ['Free T', 'Testosterone, Free'],
+    ['Testosterone', 'Testosterone, Total'],
+    ['Free PSA', 'PSA, Free'],
+    ['PSA', 'PSA, Total'],
+    ['GLU', 'Glucose'],
+    ['Total Cholesterol', 'Cholesterol, Total'],
+    ['Thyroid Stimulating Hormone', 'TSH'],
+    ['HbA1c', 'Hemoglobin A1c'],
+    ['25-OH Vitamin D', 'Vitamin D, 25-Hydroxy'],
+  ])('maps a provider spelling to its canonical display name: %s -> %s', (raw, canonical) => {
+    expect(canonicalLabTestName(raw)).toBe(canonical);
+  });
+
+  it('keeps distinct assay methods distinct rather than collapsing them', () => {
+    expect(canonicalLabTestName('Testosterone, Total, MS')).toBe('Testosterone, Total, MS');
+    expect(canonicalLabTestName('Testosterone, Total, MS')).not.toBe(
+      canonicalLabTestName('Testosterone, Total'),
+    );
+    expect(canonicalLabTestName('Estradiol, Ultrasensitive')).not.toBe(
+      canonicalLabTestName('Estradiol'),
+    );
+  });
+
+  it('passes an unrecognized test name through unchanged (trimmed)', () => {
+    expect(canonicalLabTestName('  Some Obscure Panel Value  ')).toBe('Some Obscure Panel Value');
   });
 });

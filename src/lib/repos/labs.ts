@@ -16,7 +16,7 @@ import { z } from 'zod';
 import { db } from '@/db';
 import { labResults, labVisits } from '@/db/schema';
 import { NotFoundError, requireAuthz } from '@/lib/authz';
-import { normalizeLabTestName } from '@/lib/lab-test-names';
+import { canonicalLabTestName, normalizeLabTestName } from '@/lib/lab-test-names';
 import { dependentFilter, requireListAuthz, type ListScope } from './_scope';
 
 export type LabVisitRow = typeof labVisits.$inferSelect;
@@ -35,7 +35,11 @@ export interface LabResultWithVisitDate extends LabResultRow {
 const labResultInputSchema = z
   .object({
     panelName: z.string().nullish(),
-    testName: z.string().trim().min(1),
+    // Canonicalized here — the single write-time choke point — so every
+    // source (PDF import, manual add/edit, any future importer) collapses
+    // provider-specific spellings (Labcorp/Quest/Kaiser) to one label
+    // instead of relying on every reader to normalize on the way out.
+    testName: z.string().trim().min(1).transform(canonicalLabTestName),
     value: z.number(),
     unit: z.string().nullish(),
     referenceRangeLow: z.number().nullish(),

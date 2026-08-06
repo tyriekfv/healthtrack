@@ -139,7 +139,7 @@ export async function POST(request: Request) {
       getProfile(userId, userId),
       // Active medications, name asc
       listMedications(userId, scope, { active: true, orderBy: 'name' }),
-      // Visits are ordered visit_date desc; the last 2 are sliced below
+      // Visits are ordered visit_date desc; full history is used below.
       listLabVisitsWithResults(userId, scope),
       // Recent vitals (last 30 days), recorded_at desc
       listVitals(userId, ownVitalsScope, { startDate: thirtyDaysAgoISO }),
@@ -152,25 +152,20 @@ export async function POST(request: Request) {
       listWorkouts(userId, ownVitalsScope, { from: fourteenDaysAgoISO }),
     ]);
 
-    // Recent lab visits: last 12 months (matching the dashboard AI summary's
-    // window in summary-cache.ts), most recent 8 — NOT a fixed "last 2"
-    // regardless of date. A hard visit-count cap with no date floor silently
-    // drops an older-but-still-relevant visit (e.g. a testosterone level)
-    // whenever a newer, unrelated panel (e.g. metabolic-only) was drawn after
-    // it — the AI then denies having any data for a value that's fully in
-    // the database and visible on the Labs page.
-    const labVisitCutoffISO = new Date();
-    labVisitCutoffISO.setFullYear(labVisitCutoffISO.getFullYear() - 1);
-    const labVisitCutoffDay = labVisitCutoffISO.toISOString().slice(0, 10);
-    const labVisits = allLabVisits
-      .filter((v) => v.visitDate >= labVisitCutoffDay)
-      .slice(0, 8)
-      .map((v) => ({
-        ...v,
-        labResults: [...v.labResults].sort((a, b) =>
-          a.testName.localeCompare(b.testName),
-        ),
-      }));
+    // Full lab history, every visit — no date floor or visit-count cap.
+    // A prior version capped this to the last 12 months / 8 visits, which
+    // silently dropped older-but-still-relevant data: asking "show me all my
+    // HGB data" only ever returned however much fit in that window, even
+    // though the full history was sitting in the database and visible on the
+    // Labs page. At personal-use data volumes (years of periodic draws, not
+    // thousands of rows) sending the complete history comfortably fits the
+    // model's context window, so there's no reason to truncate it.
+    const labVisits = allLabVisits.map((v) => ({
+      ...v,
+      labResults: [...v.labResults].sort((a, b) =>
+        a.testName.localeCompare(b.testName),
+      ),
+    }));
     // Each result carries its visit's draw date so lab-derived findings can
     // be date-framed (spec §AI #2).
     const labResultsData = labVisits.flatMap((v) =>

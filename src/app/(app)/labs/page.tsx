@@ -10,6 +10,7 @@ import LabImport from '@/components/labs/LabImport';
 import LabValidationReview from '@/components/labs/LabValidationReview';
 import TrendCard from '@/components/labs/TrendCard';
 import VisitCard from '@/components/labs/VisitCard';
+import { canonicalLabTestName } from '@/lib/lab-test-names';
 
 type View = 'trends' | 'visits';
 type Flow = 'idle' | 'import' | 'review';
@@ -85,7 +86,10 @@ export default function LabsPage() {
 
     for (const visit of labVisits) {
       for (const result of visit.lab_results) {
-        const key = result.test_name;
+        // Canonicalize the grouping key so results from different lab
+        // providers (or pre-normalization historical rows) merge into one
+        // trend card instead of splitting by provider-specific spelling.
+        const key = canonicalLabTestName(result.test_name);
         if (!map.has(key)) map.set(key, []);
         map.get(key)!.push({
           value: result.value,
