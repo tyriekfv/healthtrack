@@ -84,6 +84,29 @@ describe('labs repo', () => {
     expect(visits[1].labResults).toEqual([]);
   });
 
+  it('canonicalizes provider-specific test names on write (create, add, update)', async () => {
+    const visit = await repo.createLabVisitWithResults(OWNER, ownScope, {
+      visitDate: '2026-06-01',
+      results: [
+        { testName: 'HGB', value: 14.2 },
+        { testName: 'Free T', value: 22 },
+      ],
+    });
+    const byTest = new Map(visit.labResults.map((r) => [r.testName, r]));
+    expect([...byTest.keys()].sort()).toEqual(['Hemoglobin', 'Testosterone, Free']);
+
+    const added = await repo.addLabResult(OWNER, visit.id, {
+      testName: 'Testosterone, Total, MS',
+      value: 650,
+    });
+    expect(added.testName).toBe('Testosterone, Total, MS');
+
+    const updated = await repo.updateLabResult(OWNER, byTest.get('Hemoglobin')!.id, {
+      testName: 'HEMOGLOBIN',
+    });
+    expect(updated.testName).toBe('Hemoglobin');
+  });
+
   it('dependent scoping: exact filter on list, rows carry the dependent id', async () => {
     const depId = crypto.randomUUID();
     insertDependent(ctx.sqlite, depId, OWNER);

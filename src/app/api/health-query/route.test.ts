@@ -153,3 +153,34 @@ describe('POST /api/health-query — vitals scope (I1)', () => {
     expect(res.status).toBe(401);
   });
 });
+
+describe('POST /api/health-query — full lab history, no visit-count or date cap', () => {
+  it('includes a lab visit older than 12 months and past the old 8-visit cap', async () => {
+    const labs = await import('@/lib/repos/labs');
+    const ownScope = { ownerId: OWNER, dependentId: null };
+
+    // A draw from two years ago — outside the old 12-month cutoff.
+    await labs.createLabVisitWithResults(OWNER, ownScope, {
+      visitDate: '2024-01-15',
+      results: [{ testName: 'HGB', value: 16.3 }],
+    });
+    // Nine more recent visits — one past the old 8-visit cap.
+    for (let i = 0; i < 9; i++) {
+      await labs.createLabVisitWithResults(OWNER, ownScope, {
+        visitDate: `2026-0${(i % 9) + 1}-01`,
+        results: [{ testName: 'Glucose', value: 90 + i }],
+      });
+    }
+
+    const res = await route.POST(post({ query: 'show me all my HGB data' }));
+    expect(res.status).toBe(200);
+    expect(captured.context).not.toBeNull();
+
+    const prompt = query.buildSystemPrompt(captured.context!);
+    // The old-and-outside-the-window visit's canonicalized test result is
+    // present — the cap that used to drop it is gone.
+    expect(prompt).toContain('2024-01-15');
+    expect(prompt).toContain('Hemoglobin');
+    expect(prompt).toContain('16.3');
+  });
+});

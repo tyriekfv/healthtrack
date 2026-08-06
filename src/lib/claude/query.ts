@@ -25,7 +25,7 @@ USER PROFILE:
 CURRENT MEDICATIONS:
 {medications_data}
 
-RECENT LAB RESULTS:
+LAB RESULTS (complete history, every visit on file):
 {lab_results_data}
 
 DEVICE & VITAL METRICS (30-day aggregates):
