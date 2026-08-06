@@ -89,7 +89,7 @@ export default function LabsPage() {
         // Canonicalize the grouping key so results from different lab
         // providers (or pre-normalization historical rows) merge into one
         // trend card instead of splitting by provider-specific spelling.
-        const key = canonicalLabTestName(result.test_name);
+        const key = canonicalLabTestName(result.test_name, result.panel_name);
         if (!map.has(key)) map.set(key, []);
         map.get(key)!.push({
           value: result.value,

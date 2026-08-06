@@ -25,6 +25,16 @@
  * same one. Percent vs. absolute-count differentials (e.g. Neutrophils %
  * vs Neutrophils Absolute) are kept separate for the same reason: they are
  * different numbers with different units, not two spellings of one value.
+ *
+ * eGFR needs the same treatment but can't be done by name alone: creatinine-
+ * based eGFR (the default/most common formula) and cystatin-C-based eGFR are
+ * different equations that can diverge meaningfully (exactly why a cystatin
+ * panel gets ordered — as a check when creatinine-based results are
+ * equivocal), but labs commonly report both under the identical bare name
+ * "eGFR" — the panel it was drawn under is the only signal that disambiguates
+ * them. That's why `canonicalLabTestName` also takes the panel name: it's the
+ * one case in this table where two same-named results need splitting apart
+ * rather than merging, and the panel is the only way to tell them apart.
  */
 
 function fold(name: string): string {
@@ -72,7 +82,7 @@ const ANALYTE_GROUPS: AnalyteGroup[] = [
   { canonical: 'Glucose', variants: ['Glucose', 'Glucose, Fasting', 'Glucose Fasting', 'GLU'] },
   { canonical: 'BUN', variants: ['BUN', 'Blood Urea Nitrogen', 'Urea Nitrogen'] },
   { canonical: 'Creatinine', variants: ['Creatinine', 'CREAT'] },
-  { canonical: 'eGFR', variants: ['eGFR', 'EGFR', 'GFR Estimated', 'Estimated GFR'] },
+  { canonical: 'eGFR', variants: ['eGFR', 'EGFR', 'GFR Estimated', 'Estimated GFR', 'Glomerular Filtration Rate'] },
   { canonical: 'BUN/Creatinine Ratio', variants: ['BUN/Creatinine Ratio', 'BUN Creatinine Ratio'] },
   { canonical: 'Sodium', variants: ['Sodium', 'Na'] },
   { canonical: 'Potassium', variants: ['Potassium', 'K'] },
@@ -145,6 +155,9 @@ for (const group of ANALYTE_GROUPS) {
   }
 }
 
+const EGFR_GROUP_KEY = fold('eGFR');
+const CYSTATIN_EGFR_CANONICAL = 'Cystatin C - eGFR';
+
 /** Lowercase/punctuation-folded grouping key — for equality matching only, not display. */
 export function normalizeLabTestName(name: string): string {
   const key = fold(name);
@@ -157,8 +170,15 @@ export function normalizeLabTestName(name: string): string {
  * to one label. Names outside the known table pass through unchanged
  * (trimmed) — this only ever normalizes recognized analytes, never mangles
  * an unfamiliar one.
+ *
+ * `panelName` is optional context used only for the eGFR/cystatin-C split
+ * (see file header) — every other analyte is disambiguated by name alone.
  */
-export function canonicalLabTestName(name: string): string {
+export function canonicalLabTestName(name: string, panelName?: string | null): string {
   const key = fold(name);
+  const groupKey = FOLD_TO_GROUP_KEY.get(key) ?? key;
+  if (groupKey === EGFR_GROUP_KEY && panelName && /cystatin/i.test(panelName)) {
+    return CYSTATIN_EGFR_CANONICAL;
+  }
   return FOLD_TO_CANONICAL.get(key) ?? name.trim();
 }

@@ -107,6 +107,35 @@ describe('labs repo', () => {
     expect(updated.testName).toBe('Hemoglobin');
   });
 
+  it('splits eGFR by panel (cystatin C vs creatinine) on create, add, and update', async () => {
+    const visit = await repo.createLabVisitWithResults(OWNER, ownScope, {
+      visitDate: '2026-06-01',
+      results: [
+        { testName: 'eGFR', panelName: 'Comprehensive Metabolic Panel', value: 57 },
+        { testName: 'eGFR', panelName: 'Cystatin C with eGFR', value: 61 },
+      ],
+    });
+    const byPanel = new Map(visit.labResults.map((r) => [r.panelName, r]));
+    expect(byPanel.get('Comprehensive Metabolic Panel')!.testName).toBe('eGFR');
+    expect(byPanel.get('Cystatin C with eGFR')!.testName).toBe('Cystatin C - eGFR');
+
+    const added = await repo.addLabResult(OWNER, visit.id, {
+      testName: 'Glomerular Filtration Rate',
+      panelName: 'Cystatin C with eGFR',
+      value: 76,
+    });
+    expect(added.testName).toBe('Cystatin C - eGFR');
+
+    // Renaming just the test name (no panelName in the payload) still splits
+    // correctly — falls back to the row's existing panel.
+    const cmpResult = byPanel.get('Comprehensive Metabolic Panel')!;
+    const renamed = await repo.updateLabResult(OWNER, cmpResult.id, {
+      testName: 'Estimated GFR',
+    });
+    expect(renamed.testName).toBe('eGFR');
+    expect(renamed.panelName).toBe('Comprehensive Metabolic Panel');
+  });
+
   it('dependent scoping: exact filter on list, rows carry the dependent id', async () => {
     const depId = crypto.randomUUID();
     insertDependent(ctx.sqlite, depId, OWNER);

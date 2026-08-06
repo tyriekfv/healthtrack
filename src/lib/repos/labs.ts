@@ -32,23 +32,30 @@ export interface LabResultWithVisitDate extends LabResultRow {
 
 // Unknown keys (id, user_id, dependent_id, timestamps…) are stripped —
 // row scope is never client-controlled.
-const labResultInputSchema = z
-  .object({
-    panelName: z.string().nullish(),
-    // Canonicalized here — the single write-time choke point — so every
-    // source (PDF import, manual add/edit, any future importer) collapses
-    // provider-specific spellings (Labcorp/Quest/Kaiser) to one label
-    // instead of relying on every reader to normalize on the way out.
-    testName: z.string().trim().min(1).transform(canonicalLabTestName),
-    value: z.number(),
-    unit: z.string().nullish(),
-    referenceRangeLow: z.number().nullish(),
-    referenceRangeHigh: z.number().nullish(),
-    referenceRangeText: z.string().nullish(),
-    flag: z.enum(['normal', 'high', 'low', 'critical']).nullish(),
-    loincCode: z.string().nullish(),
-  })
-  .strip();
+const labResultBaseSchema = z.object({
+  panelName: z.string().nullish(),
+  testName: z.string().trim().min(1),
+  value: z.number(),
+  unit: z.string().nullish(),
+  referenceRangeLow: z.number().nullish(),
+  referenceRangeHigh: z.number().nullish(),
+  referenceRangeText: z.string().nullish(),
+  flag: z.enum(['normal', 'high', 'low', 'critical']).nullish(),
+  loincCode: z.string().nullish(),
+});
+
+// Canonicalized here — the single write-time choke point — so every source
+// (PDF import, manual add/edit, any future importer) collapses
+// provider-specific spellings (Labcorp/Quest/Kaiser) to one label instead of
+// relying on every reader to normalize on the way out. An object-level
+// transform (not a per-field one) because canonicalization needs panelName
+// alongside testName — see the eGFR/cystatin-C split in lab-test-names.ts.
+const labResultInputSchema = labResultBaseSchema
+  .strip()
+  .transform((data) => ({
+    ...data,
+    testName: canonicalLabTestName(data.testName, data.panelName),
+  }));
 
 const labVisitInputSchema = z
   .object({
@@ -65,7 +72,11 @@ export type LabVisitInput = z.input<typeof labVisitInputSchema>;
 const labVisitUpdateSchema = labVisitInputSchema
   .omit({ results: true })
   .partial();
-const labResultUpdateSchema = labResultInputSchema.partial();
+// Not derived from labResultInputSchema (that's a ZodEffects post-transform,
+// .partial() only applies to ZodObject) — canonicalization happens explicitly
+// in updateLabResult instead, since a partial update may omit panelName and
+// needs the existing row's value as a fallback (see there).
+const labResultUpdateSchema = labResultBaseSchema.partial().strip();
 
 /**
  * Visits (newest first) with their results nested — hook parity with the old
@@ -242,6 +253,13 @@ export async function updateLabResult(
     'write',
   );
   const values = labResultUpdateSchema.parse(updates);
+  if (values.testName !== undefined) {
+    // A partial update may rename the test without re-sending panelName —
+    // fall back to the row's existing panel so the eGFR/cystatin-C split
+    // still works when only testName is being edited.
+    const panelName = values.panelName !== undefined ? values.panelName : result.panelName;
+    values.testName = canonicalLabTestName(values.testName, panelName);
+  }
   const [updated] = await db
     .update(labResults)
     .set(values)

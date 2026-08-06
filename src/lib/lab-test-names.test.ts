@@ -70,4 +70,32 @@ describe('canonicalLabTestName', () => {
   it('passes an unrecognized test name through unchanged (trimmed)', () => {
     expect(canonicalLabTestName('  Some Obscure Panel Value  ')).toBe('Some Obscure Panel Value');
   });
+
+  describe('eGFR / cystatin-C split', () => {
+    it('splits eGFR into its own bucket when the panel signals cystatin C', () => {
+      expect(canonicalLabTestName('eGFR', 'Cystatin C with eGFR')).toBe('Cystatin C - eGFR');
+      expect(canonicalLabTestName('eGFR', 'Cystatin C with eGFR')).not.toBe(
+        canonicalLabTestName('eGFR', 'Comprehensive Metabolic Panel'),
+      );
+    });
+
+    it('applies the split across every eGFR spelling, not just the bare name', () => {
+      expect(canonicalLabTestName('Estimated GFR', 'Cystatin C with eGFR')).toBe('Cystatin C - eGFR');
+      expect(canonicalLabTestName('Glomerular Filtration Rate', 'Cystatin C with eGFR')).toBe(
+        'Cystatin C - eGFR',
+      );
+    });
+
+    it('keeps creatinine-based eGFR merged under the normal canonical name', () => {
+      expect(canonicalLabTestName('eGFR', 'Comprehensive Metabolic Panel')).toBe('eGFR');
+      expect(canonicalLabTestName('eGFR', 'Creatinine')).toBe('eGFR');
+      expect(canonicalLabTestName('Glomerular Filtration Rate', 'Creatinine, Serum')).toBe('eGFR');
+      // No panel context at all — still falls back to the normal bucket.
+      expect(canonicalLabTestName('eGFR')).toBe('eGFR');
+    });
+
+    it('is case-insensitive on the panel name', () => {
+      expect(canonicalLabTestName('eGFR', 'CYSTATIN C WITH EGFR')).toBe('Cystatin C - eGFR');
+    });
+  });
 });
