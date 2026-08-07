@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { authClient } from '@/lib/auth/client';
 import { useCapabilities } from '@/hooks/useCapabilities';
 
@@ -9,11 +10,36 @@ interface BottomNavProps {
   activePath: string;
 }
 
+type NavLabelKey =
+  | 'home'
+  | 'health'
+  | 'dashboard'
+  | 'medications'
+  | 'labs'
+  | 'cycleTracking'
+  | 'vitals'
+  | 'fitness'
+  | 'conditions'
+  | 'allergies'
+  | 'procedures'
+  | 'vaccines'
+  | 'appointments'
+  | 'notes'
+  | 'query'
+  | 'settings'
+  | 'logOut';
+
+interface NavLinkDef {
+  labelKey: NavLabelKey;
+  href: string;
+  icon: React.ReactNode;
+}
+
 const iconSize = 18;
 
-const moreLinks = [
+const moreLinks: NavLinkDef[] = [
   {
-    label: 'Fitness',
+    labelKey: 'fitness',
     href: '/fitness',
     icon: (
       // Dumbbell
@@ -25,7 +51,7 @@ const moreLinks = [
     ),
   },
   {
-    label: 'Medications',
+    labelKey: 'medications',
     href: '/medications',
     icon: (
       <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -35,7 +61,7 @@ const moreLinks = [
     ),
   },
   {
-    label: 'Cycle Tracking',
+    labelKey: 'cycleTracking',
     href: '/cycle',
     icon: (
       // Droplet — dose periods + blood donations
@@ -45,7 +71,7 @@ const moreLinks = [
     ),
   },
   {
-    label: 'Allergies',
+    labelKey: 'allergies',
     href: '/allergies',
     icon: (
       <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -55,7 +81,7 @@ const moreLinks = [
     ),
   },
   {
-    label: 'Procedures',
+    labelKey: 'procedures',
     href: '/procedures',
     icon: (
       <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -66,7 +92,7 @@ const moreLinks = [
     ),
   },
   {
-    label: 'Vaccines',
+    labelKey: 'vaccines',
     href: '/vaccines',
     icon: (
       <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -77,7 +103,7 @@ const moreLinks = [
     ),
   },
   {
-    label: 'Appointments',
+    labelKey: 'appointments',
     href: '/appointments',
     icon: (
       <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -87,7 +113,7 @@ const moreLinks = [
     ),
   },
   {
-    label: 'Notes',
+    labelKey: 'notes',
     href: '/notes',
     icon: (
       <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -99,7 +125,7 @@ const moreLinks = [
     ),
   },
   {
-    label: 'Query',
+    labelKey: 'query',
     href: '/query',
     icon: (
       <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -108,7 +134,7 @@ const moreLinks = [
     ),
   },
   {
-    label: 'Settings',
+    labelKey: 'settings',
     href: '/settings',
     icon: (
       <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -119,9 +145,9 @@ const moreLinks = [
   },
 ];
 
-const tabs = [
+const tabs: NavLinkDef[] = [
   {
-    label: 'Home',
+    labelKey: 'home',
     href: '/dashboard',
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -131,7 +157,7 @@ const tabs = [
     ),
   },
   {
-    label: 'Health',
+    labelKey: 'health',
     href: '/conditions',
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -140,7 +166,7 @@ const tabs = [
     ),
   },
   {
-    label: 'Labs',
+    labelKey: 'labs',
     href: '/labs',
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -150,7 +176,7 @@ const tabs = [
     ),
   },
   {
-    label: 'Vitals',
+    labelKey: 'vitals',
     href: '/vitals',
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -161,6 +187,7 @@ const tabs = [
 ];
 
 export default function BottomNav({ activePath }: BottomNavProps) {
+  const t = useTranslations('nav');
   const { capabilities } = useCapabilities();
   const [moreOpen, setMoreOpen] = useState(false);
   // /query is AI-backed — hide it when the instance has no ANTHROPIC_API_KEY.
@@ -204,7 +231,7 @@ export default function BottomNav({ activePath }: BottomNavProps) {
                 style={{ color: activePath === link.href ? 'var(--color-sage)' : 'var(--color-text-primary)' }}
               >
                 {link.icon}
-                {link.label}
+                {t(link.labelKey)}
               </Link>
             </React.Fragment>
           ))}
@@ -220,7 +247,7 @@ export default function BottomNav({ activePath }: BottomNavProps) {
               <polyline points="16 17 21 12 16 7" />
               <line x1="21" y1="12" x2="9" y2="12" />
             </svg>
-            Log Out
+            {t('logOut')}
           </button>
         </div>
       )}
@@ -243,7 +270,7 @@ export default function BottomNav({ activePath }: BottomNavProps) {
               style={{ color: isActive ? 'var(--color-sage)' : 'var(--color-text-muted)' }}
             >
               {tab.icon}
-              <span className="text-[10px] font-medium">{tab.label}</span>
+              <span className="text-[10px] font-medium">{t(tab.labelKey)}</span>
             </Link>
           );
         })}
@@ -265,7 +292,7 @@ export default function BottomNav({ activePath }: BottomNavProps) {
             <circle cx="19" cy="12" r="1" />
             <circle cx="5" cy="12" r="1" />
           </svg>
-          <span className="text-[10px] font-medium">More</span>
+          <span className="text-[10px] font-medium">{t('more')}</span>
         </button>
       </nav>
     </>

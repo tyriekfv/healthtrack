@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 import { profileSchema } from '@/lib/validations';
 import { apiFetch, ApiRequestError } from '@/lib/api/client';
 import type { Profile } from '@/lib/types';
@@ -13,6 +14,7 @@ import { z } from 'zod';
 type ProfileFormData = z.infer<typeof profileSchema>;
 
 export function ProfileForm() {
+  const t = useTranslations('settings.profile');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -98,11 +100,11 @@ export function ProfileForm() {
           weight_lbs: weightLbs,
         }),
       });
-      setMessage({ type: 'success', text: 'Profile saved!' });
+      setMessage({ type: 'success', text: t('saveSuccess') });
     } catch (err) {
       setMessage({
         type: 'error',
-        text: err instanceof Error ? err.message : 'Failed to save profile',
+        text: err instanceof Error ? err.message : t('saveError'),
       });
     }
     setSaving(false);
@@ -116,7 +118,7 @@ export function ProfileForm() {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
         <label htmlFor="display_name" className="block text-sm font-medium text-text-muted mb-1">
-          Display Name
+          {t('displayNameLabel')}
         </label>
         <input
           id="display_name"
@@ -133,7 +135,7 @@ export function ProfileForm() {
 
       <div>
         <label htmlFor="date_of_birth" className="block text-sm font-medium text-text-muted mb-1">
-          Date of Birth
+          {t('dateOfBirthLabel')}
         </label>
         <input
           id="date_of_birth"
@@ -145,19 +147,19 @@ export function ProfileForm() {
 
       <div>
         <fieldset>
-          <legend className="block text-sm font-medium text-text-muted mb-2">Biological Sex</legend>
+          <legend className="block text-sm font-medium text-text-muted mb-2">{t('biologicalSexLabel')}</legend>
           <div className="flex gap-4">
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="radio" value="male" {...register('biological_sex')} className="accent-accent-green" />
-              <span className="text-sm">Male</span>
+              <span className="text-sm">{t('male')}</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="radio" value="female" {...register('biological_sex')} className="accent-accent-green" />
-              <span className="text-sm">Female</span>
+              <span className="text-sm">{t('female')}</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="radio" value="prefer_not_to_say" {...register('biological_sex')} className="accent-accent-green" />
-              <span className="text-sm">Prefer not to say</span>
+              <span className="text-sm">{t('preferNotToSay')}</span>
             </label>
           </div>
           {errors.biological_sex && (
@@ -168,7 +170,7 @@ export function ProfileForm() {
 
       {/* Unit system toggle */}
       <div>
-        <span className="block text-sm font-medium text-text-muted mb-2">Unit System</span>
+        <span className="block text-sm font-medium text-text-muted mb-2">{t('unitSystemLabel')}</span>
         <div className="inline-flex rounded-lg overflow-hidden border" style={{ borderColor: 'var(--border-card)' }}>
           <button
             type="button"
@@ -179,7 +181,7 @@ export function ProfileForm() {
               color: unitSystem === 'imperial' ? 'var(--color-bark)' : 'var(--color-text-muted)',
             }}
           >
-            Imperial
+            {t('imperial')}
           </button>
           <button
             type="button"
@@ -190,7 +192,7 @@ export function ProfileForm() {
               color: unitSystem === 'metric' ? 'var(--color-bark)' : 'var(--color-text-muted)',
             }}
           >
-            Metric
+            {t('metric')}
           </button>
         </div>
       </div>
@@ -198,7 +200,7 @@ export function ProfileForm() {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label htmlFor="height_display" className="block text-sm font-medium text-text-muted mb-1">
-            Height ({unitSystem === 'metric' ? 'cm' : 'total inches'})
+            {t('heightLabel', { unit: unitSystem === 'metric' ? t('heightUnitCm') : t('heightUnitInches') })}
           </label>
           <input
             id="height_display"
@@ -206,7 +208,7 @@ export function ProfileForm() {
             value={heightDisplay}
             onChange={(e) => setHeightDisplay(Number(e.target.value))}
             className="w-full px-3 py-2.5 bg-bg-primary border border-border-card rounded-xl text-text-primary focus:outline-none focus:border-accent-green"
-            placeholder={unitSystem === 'metric' ? 'e.g. 178' : 'e.g. 70'}
+            placeholder={unitSystem === 'metric' ? t('heightPlaceholderMetric') : t('heightPlaceholderImperial')}
           />
           {errors.height_inches && (
             <p className="mt-1 text-sm text-accent-red" role="alert">{errors.height_inches.message}</p>
@@ -214,7 +216,7 @@ export function ProfileForm() {
         </div>
         <div>
           <label htmlFor="weight_display" className="block text-sm font-medium text-text-muted mb-1">
-            Weight ({unitSystem === 'metric' ? 'kg' : 'lbs'})
+            {t('weightLabel', { unit: unitSystem === 'metric' ? t('weightUnitKg') : t('weightUnitLbs') })}
           </label>
           <input
             id="weight_display"
@@ -248,7 +250,7 @@ export function ProfileForm() {
         disabled={saving}
         className="w-full px-4 py-2.5 bg-accent-green text-bg-primary font-medium rounded-xl disabled:opacity-50 transition-opacity"
       >
-        {saving ? 'Saving...' : 'Save Profile'}
+        {saving ? t('saving') : t('saveProfile')}
       </button>
     </form>
   );

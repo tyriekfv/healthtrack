@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { authClient } from '@/lib/auth/client';
 import { useCapabilities } from '@/hooks/useCapabilities';
 
@@ -9,9 +10,32 @@ interface SidebarNavProps {
   activePath: string;
 }
 
-const mainLinks = [
+type NavLabelKey =
+  | 'dashboard'
+  | 'medications'
+  | 'labs'
+  | 'cycleTracking'
+  | 'vitals'
+  | 'fitness'
+  | 'conditions'
+  | 'allergies'
+  | 'procedures'
+  | 'vaccines'
+  | 'appointments'
+  | 'notes'
+  | 'query'
+  | 'settings'
+  | 'logOut';
+
+interface NavLinkDef {
+  labelKey: NavLabelKey;
+  href: string;
+  icon: React.ReactNode;
+}
+
+const mainLinks: NavLinkDef[] = [
   {
-    label: 'Dashboard',
+    labelKey: 'dashboard',
     href: '/dashboard',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -23,7 +47,7 @@ const mainLinks = [
     ),
   },
   {
-    label: 'Medications',
+    labelKey: 'medications',
     href: '/medications',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -33,7 +57,7 @@ const mainLinks = [
     ),
   },
   {
-    label: 'Labs',
+    labelKey: 'labs',
     href: '/labs',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -43,7 +67,7 @@ const mainLinks = [
     ),
   },
   {
-    label: 'Cycle Tracking',
+    labelKey: 'cycleTracking',
     href: '/cycle',
     icon: (
       // Droplet — dose periods + blood donations
@@ -53,7 +77,7 @@ const mainLinks = [
     ),
   },
   {
-    label: 'Vitals',
+    labelKey: 'vitals',
     href: '/vitals',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -62,7 +86,7 @@ const mainLinks = [
     ),
   },
   {
-    label: 'Fitness',
+    labelKey: 'fitness',
     href: '/fitness',
     icon: (
       // Dumbbell
@@ -74,7 +98,7 @@ const mainLinks = [
     ),
   },
   {
-    label: 'Conditions',
+    labelKey: 'conditions',
     href: '/conditions',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -83,7 +107,7 @@ const mainLinks = [
     ),
   },
   {
-    label: 'Allergies',
+    labelKey: 'allergies',
     href: '/allergies',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -93,7 +117,7 @@ const mainLinks = [
     ),
   },
   {
-    label: 'Procedures',
+    labelKey: 'procedures',
     href: '/procedures',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -104,7 +128,7 @@ const mainLinks = [
     ),
   },
   {
-    label: 'Vaccines',
+    labelKey: 'vaccines',
     href: '/vaccines',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -115,7 +139,7 @@ const mainLinks = [
     ),
   },
   {
-    label: 'Appointments',
+    labelKey: 'appointments',
     href: '/appointments',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -125,7 +149,7 @@ const mainLinks = [
     ),
   },
   {
-    label: 'Notes',
+    labelKey: 'notes',
     href: '/notes',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -137,7 +161,7 @@ const mainLinks = [
     ),
   },
   {
-    label: 'Query',
+    labelKey: 'query',
     href: '/query',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -147,8 +171,8 @@ const mainLinks = [
   },
 ];
 
-const settingsLink = {
-  label: 'Settings',
+const settingsLink: NavLinkDef = {
+  labelKey: 'settings',
   href: '/settings',
   icon: (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -175,6 +199,7 @@ function NavLink({ href, label, icon, isActive }: { href: string; label: string;
 }
 
 export default function SidebarNav({ activePath }: SidebarNavProps) {
+  const t = useTranslations('nav');
   const { capabilities } = useCapabilities();
   // /query is AI-backed — hide it when the instance has no ANTHROPIC_API_KEY.
   const links =
@@ -208,7 +233,7 @@ export default function SidebarNav({ activePath }: SidebarNavProps) {
           <NavLink
             key={link.href}
             href={link.href}
-            label={link.label}
+            label={t(link.labelKey)}
             icon={link.icon}
             isActive={activePath === link.href}
           />
@@ -219,7 +244,7 @@ export default function SidebarNav({ activePath }: SidebarNavProps) {
       <div className="px-3 pb-4 space-y-1" style={{ borderTop: '1px solid var(--border-card)', paddingTop: '12px' }}>
         <NavLink
           href={settingsLink.href}
-          label={settingsLink.label}
+          label={t(settingsLink.labelKey)}
           icon={settingsLink.icon}
           isActive={activePath === settingsLink.href}
         />
@@ -235,7 +260,7 @@ export default function SidebarNav({ activePath }: SidebarNavProps) {
             <polyline points="16 17 21 12 16 7" />
             <line x1="21" y1="12" x2="9" y2="12" />
           </svg>
-          Log Out
+          {t('logOut')}
         </button>
       </div>
     </aside>
