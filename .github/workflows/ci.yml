@@ -5,11 +5,7 @@ name: CI
 
 on:
   push:
-    # feature/spanish-localization: TEMPORARY, verification-only (PR creation
-    # is blocked by a gh-token permission issue, so this branch can't get CI
-    # via pull_request). Remove this line before merging to main -- main's
-    # ci.yml should stay [main, base].
-    branches: [main, base, feature/spanish-localization]
+    branches: [main, base]
   pull_request:
 
 concurrency:
