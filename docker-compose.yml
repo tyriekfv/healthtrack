@@ -5,7 +5,7 @@
 services:
   healthtrack:
     # Use the published image, or build locally with `docker compose build`.
-    image: ghcr.io/ezekielthemad/healthtrack:latest
+    image: ghcr.io/tyriekfv/healthtrack:latest
     build: .
     container_name: healthtrack
     ports:

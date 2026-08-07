@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <Container version="2">
   <Name>HealthTrack</Name>
-  <Repository>ghcr.io/ezekielthemad/healthtrack:latest</Repository>
-  <Registry>https://github.com/EzekielTheMad/healthtrack/pkgs/container/healthtrack</Registry>
+  <Repository>ghcr.io/tyriekfv/healthtrack:latest</Repository>
+  <Registry>https://github.com/tyriekfv/healthtrack/pkgs/container/healthtrack</Registry>
   <Network>bridge</Network>
   <MyIP/>
   <Shell>sh</Shell>
   <Privileged>false</Privileged>
-  <Support>https://github.com/EzekielTheMad/healthtrack/issues</Support>
-  <Project>https://github.com/EzekielTheMad/healthtrack</Project>
+  <Support>https://github.com/tyriekfv/healthtrack/issues</Support>
+  <Project>https://github.com/tyriekfv/healthtrack</Project>
   <Overview>Self-hosted personal health tracker. Track medications, conditions, allergies, labs, vitals, procedures, vaccines, appointments and notes for yourself and your dependents — all data stays in a single SQLite database and uploads folder under /data on your server. No cloud services required. The first registered user becomes the instance admin; after that, registration is invite-only by default (create single-use invite links under Settings, or set SIGNUPS_ENABLED to true to open registration). Optional integrations (each enabled only when its keys are set): Anthropic API key for AI health summaries, natural-language queries and lab/vaccine PDF parsing; Google OAuth for "Sign in with Google"; Oura for ring data sync. Back up /data to back up everything.</Overview>
   <Category>Tools: Productivity:</Category>
   <Beta>False</Beta>
@@ -40,11 +40,11 @@
 - Initial release: medications, conditions, allergies, labs, vitals, procedures, vaccines, dependents, sharing, delegates, and a scoped REST API with personal access tokens.
   </Changes>
   <WebUI>http://[IP]:[PORT:3000]</WebUI>
-  <TemplateURL>https://raw.githubusercontent.com/EzekielTheMad/healthtrack/main/unraid/healthtrack.xml</TemplateURL>
-  <Icon>https://raw.githubusercontent.com/EzekielTheMad/healthtrack/main/public/icon.png</Icon>
-  <Screenshot>https://raw.githubusercontent.com/EzekielTheMad/healthtrack/main/docs/screenshots/dashboard.webp</Screenshot>
-  <Screenshot>https://raw.githubusercontent.com/EzekielTheMad/healthtrack/main/docs/screenshots/vitals-trends.webp</Screenshot>
-  <Screenshot>https://raw.githubusercontent.com/EzekielTheMad/healthtrack/main/docs/screenshots/import-review.webp</Screenshot>
+  <TemplateURL>https://raw.githubusercontent.com/tyriekfv/healthtrack/main/unraid/healthtrack.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/tyriekfv/healthtrack/main/public/icon.png</Icon>
+  <Screenshot>https://raw.githubusercontent.com/tyriekfv/healthtrack/main/docs/screenshots/dashboard.webp</Screenshot>
+  <Screenshot>https://raw.githubusercontent.com/tyriekfv/healthtrack/main/docs/screenshots/vitals-trends.webp</Screenshot>
+  <Screenshot>https://raw.githubusercontent.com/tyriekfv/healthtrack/main/docs/screenshots/import-review.webp</Screenshot>
   <ExtraParams/>
   <PostArgs/>
   <CPUset/>

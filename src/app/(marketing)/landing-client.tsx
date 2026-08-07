@@ -152,7 +152,7 @@ export default function LandingClient({
         </Link>
         <div className="flex items-center gap-4">
           <a
-            href="https://github.com/EzekielTheMad/healthtrack"
+            href="https://github.com/tyriekfv/healthtrack"
             target="_blank"
             rel="noopener noreferrer"
             className="hidden sm:inline text-sm font-medium no-underline hover:underline"
@@ -230,7 +230,7 @@ export default function LandingClient({
               : 'Registration on this instance is closed.'}{' '}
             Want your own?{' '}
             <a
-              href="https://github.com/EzekielTheMad/healthtrack"
+              href="https://github.com/tyriekfv/healthtrack"
               target="_blank"
               rel="noopener noreferrer"
               className="underline hover:opacity-80"
@@ -434,7 +434,7 @@ export default function LandingClient({
             </Link>
             {!signupsOpen && (
               <a
-                href="https://github.com/EzekielTheMad/healthtrack"
+                href="https://github.com/tyriekfv/healthtrack"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block px-8 py-3.5 rounded-full text-base font-semibold no-underline transition-all hover:-translate-y-0.5"
@@ -476,7 +476,7 @@ export default function LandingClient({
               Terms of Service
             </Link>
             <a
-              href="https://github.com/EzekielTheMad/healthtrack"
+              href="https://github.com/tyriekfv/healthtrack"
               target="_blank"
               rel="noopener noreferrer"
               className="no-underline hover:underline"
@@ -485,7 +485,7 @@ export default function LandingClient({
               GitHub
             </a>
             <a
-              href="https://github.com/EzekielTheMad/healthtrack/blob/main/SECURITY.md"
+              href="https://github.com/tyriekfv/healthtrack/blob/main/SECURITY.md"
               target="_blank"
               rel="noopener noreferrer"
               className="no-underline hover:underline"
@@ -494,7 +494,7 @@ export default function LandingClient({
               Security
             </a>
             <a
-              href="https://github.com/EzekielTheMad/healthtrack/blob/main/LICENSE"
+              href="https://github.com/tyriekfv/healthtrack/blob/main/LICENSE"
               target="_blank"
               rel="noopener noreferrer"
               className="no-underline hover:underline"

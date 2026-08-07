@@ -416,7 +416,7 @@ export default function ApiDocsPage() {
               (<code>scripts/import-devices-backfill.ts</code>, with a <code>--dry-run</code>{' '}
               validation mode) and the full file format in{' '}
               <a
-                href="https://github.com/EzekielTheMad/healthtrack/blob/main/docs/backfill-format.md"
+                href="https://github.com/tyriekfv/healthtrack/blob/main/docs/backfill-format.md"
                 style={{ color: 'var(--color-sage)' }}
               >
                 docs/backfill-format.md

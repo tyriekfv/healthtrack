@@ -142,7 +142,7 @@ export default function TermsOfServicePage() {
             <p className="leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
               The HealthTrack software is open source and licensed under the{' '}
               <a
-                href="https://github.com/EzekielTheMad/healthtrack/blob/main/LICENSE"
+                href="https://github.com/tyriekfv/healthtrack/blob/main/LICENSE"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="underline"

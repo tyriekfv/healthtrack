@@ -19,7 +19,7 @@ device data via a scoped REST API (`/api/v1/...`).
 Support and bug reports: GitHub issues (see the link below). This repository is
 actively maintained.
   </Profile>
-  <Icon>https://raw.githubusercontent.com/EzekielTheMad/healthtrack/main/public/icon.png</Icon>
-  <WebPage>https://github.com/EzekielTheMad/healthtrack</WebPage>
-  <Forum>https://github.com/EzekielTheMad/healthtrack/issues</Forum>
+  <Icon>https://raw.githubusercontent.com/tyriekfv/healthtrack/main/public/icon.png</Icon>
+  <WebPage>https://github.com/tyriekfv/healthtrack</WebPage>
+  <Forum>https://github.com/tyriekfv/healthtrack/issues</Forum>
 </CommunityApplications>

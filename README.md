@@ -1,7 +1,7 @@
 # HealthTrack
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-teal.svg)](LICENSE)
-[![CI](https://github.com/EzekielTheMad/healthtrack/actions/workflows/ci.yml/badge.svg)](https://github.com/EzekielTheMad/healthtrack/actions/workflows/ci.yml)
+[![CI](https://github.com/tyriekfv/healthtrack/actions/workflows/ci.yml/badge.svg)](https://github.com/tyriekfv/healthtrack/actions/workflows/ci.yml)
 
 **Self-hosted personal & family health tracker.** Medications, conditions, allergies, labs, vitals, procedures, vaccines, appointments and notes — for you and your dependents — in a single Docker container. All data stays in one SQLite database and an uploads folder on **your** server. No cloud services required.
 
@@ -58,7 +58,7 @@ docker run -d \
   -p 3000:3000 \
   -v ./data:/data \
   -e APP_URL=http://localhost:3000 \
-  ghcr.io/ezekielthemad/healthtrack:latest
+  ghcr.io/tyriekfv/healthtrack:latest
 ```
 
 Open http://localhost:3000 and register — **the first user becomes the instance admin**. After that, registration is **invite-only by default**: create single-use invite links under **Settings → Invites** to add family members. (Set `SIGNUPS_ENABLED=true` to open registration to anyone, or `false` to close it completely.)

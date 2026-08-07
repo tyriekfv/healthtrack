@@ -21,7 +21,7 @@ uploaded PDFs, auto-generated secrets) lives in one volume — back up
 2. Add the repository URL and click **Save**:
 
    ```
-   https://github.com/EzekielTheMad/healthtrack
+   https://github.com/tyriekfv/healthtrack
    ```
 
 3. Click **Add Container** and pick **healthtrack** from the *Select a
@@ -32,7 +32,7 @@ Alternatively, download the raw template and drop it into
 `/boot/config/plugins/dockerMan/templates-user/` on your flash drive:
 
 ```
-https://raw.githubusercontent.com/EzekielTheMad/healthtrack/main/unraid/healthtrack.xml
+https://raw.githubusercontent.com/tyriekfv/healthtrack/main/unraid/healthtrack.xml
 ```
 
 ## Option 3 — docker compose / docker run
@@ -44,7 +44,7 @@ docker run -d \
   -v /mnt/user/appdata/healthtrack:/data \
   -e APP_URL=http://YOUR_SERVER_IP:3000 \
   -e PUID=99 -e PGID=100 \
-  ghcr.io/ezekielthemad/healthtrack:latest
+  ghcr.io/tyriekfv/healthtrack:latest
 ```
 
 Or use the [`docker-compose.yml`](../docker-compose.yml) in the repository
