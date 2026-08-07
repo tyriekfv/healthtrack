@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import type { Note, NoteType } from '@/lib/types';
 
 interface NoteFeedProps {
@@ -14,27 +15,27 @@ const TYPE_BADGE_STYLES: Record<NoteType, { color: string; bg: string }> = {
   general: { color: 'var(--color-text-muted)', bg: 'rgba(155, 155, 155, 0.12)' },
 };
 
-function formatRelativeTime(dateStr: string): string {
+function formatRelativeTime(dateStr: string, t: ReturnType<typeof useTranslations>): string {
   const now = Date.now();
   const then = new Date(dateStr).getTime();
   const diffSec = Math.floor((now - then) / 1000);
 
-  if (diffSec < 60) return 'just now';
+  if (diffSec < 60) return t('relativeTime.justNow');
   const diffMin = Math.floor(diffSec / 60);
-  if (diffMin < 60) return `${diffMin} minute${diffMin !== 1 ? 's' : ''} ago`;
+  if (diffMin < 60) return t('relativeTime.minutesAgo', { count: diffMin });
   const diffHr = Math.floor(diffMin / 60);
-  if (diffHr < 24) return `${diffHr} hour${diffHr !== 1 ? 's' : ''} ago`;
+  if (diffHr < 24) return t('relativeTime.hoursAgo', { count: diffHr });
   const diffDay = Math.floor(diffHr / 24);
-  if (diffDay < 30) return `${diffDay} day${diffDay !== 1 ? 's' : ''} ago`;
+  if (diffDay < 30) return t('relativeTime.daysAgo', { count: diffDay });
   const diffMonth = Math.floor(diffDay / 30);
-  return `${diffMonth} month${diffMonth !== 1 ? 's' : ''} ago`;
+  return t('relativeTime.monthsAgo', { count: diffMonth });
 }
 
 function formatFullDate(dateStr: string): string {
   return new Date(dateStr).toLocaleString();
 }
 
-function SeverityDots({ severity }: { severity: number }) {
+function SeverityDots({ severity, t }: { severity: number; t: ReturnType<typeof useTranslations> }) {
   const getColor = (level: number): string => {
     if (level <= 2) return 'var(--color-sage)';
     if (level === 3) return 'var(--color-warning)';
@@ -42,7 +43,7 @@ function SeverityDots({ severity }: { severity: number }) {
   };
 
   return (
-    <div className="flex items-center gap-1" aria-label={`Severity ${severity} of 5`}>
+    <div className="flex items-center gap-1" aria-label={t('severity.ariaLabel', { value: severity })}>
       {Array.from({ length: 5 }, (_, i) => (
         <span
           key={i}
@@ -57,6 +58,7 @@ function SeverityDots({ severity }: { severity: number }) {
 }
 
 export default function NoteFeed({ notes, onDelete }: NoteFeedProps) {
+  const t = useTranslations('notes');
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -70,7 +72,7 @@ export default function NoteFeed({ notes, onDelete }: NoteFeedProps) {
   if (notes.length === 0) return null;
 
   return (
-    <div className="space-y-3" role="feed" aria-label="Notes feed">
+    <div className="space-y-3" role="feed" aria-label={t('feedAriaLabel')}>
       {notes.map((note) => {
         const badge = TYPE_BADGE_STYLES[note.note_type];
         return (
@@ -88,16 +90,16 @@ export default function NoteFeed({ notes, onDelete }: NoteFeedProps) {
                   title={formatFullDate(note.recorded_at)}
                   dateTime={note.recorded_at}
                 >
-                  {formatRelativeTime(note.recorded_at)}
+                  {formatRelativeTime(note.recorded_at, t)}
                 </time>
                 <span
                   className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium capitalize"
                   style={{ color: badge.color, backgroundColor: badge.bg }}
                 >
-                  {note.note_type}
+                  {t(`type.${note.note_type}`)}
                 </span>
                 {note.note_type === 'symptom' && note.severity != null && (
-                  <SeverityDots severity={note.severity} />
+                  <SeverityDots severity={note.severity} t={t} />
                 )}
               </div>
 
@@ -106,7 +108,7 @@ export default function NoteFeed({ notes, onDelete }: NoteFeedProps) {
                 {confirmingId === note.id ? (
                   <>
                     <span className="text-xs" style={{ color: 'var(--color-terracotta)' }}>
-                      Delete?
+                      {t('card.confirmDelete')}
                     </span>
                     <button
                       type="button"
@@ -114,18 +116,18 @@ export default function NoteFeed({ notes, onDelete }: NoteFeedProps) {
                       disabled={deletingId === note.id}
                       className="text-xs font-medium px-2 py-1 rounded cursor-pointer disabled:opacity-50"
                       style={{ color: 'var(--color-terracotta)', backgroundColor: 'rgba(224, 122, 95, 0.12)' }}
-                      aria-label="Confirm delete"
+                      aria-label={t('card.confirmDeleteAriaLabel')}
                     >
-                      {deletingId === note.id ? 'Deleting...' : 'Yes'}
+                      {deletingId === note.id ? t('card.deleting') : t('card.confirmYes')}
                     </button>
                     <button
                       type="button"
                       onClick={() => setConfirmingId(null)}
                       className="text-xs font-medium px-2 py-1 rounded cursor-pointer"
                       style={{ color: 'var(--color-text-muted)' }}
-                      aria-label="Cancel delete"
+                      aria-label={t('card.cancelDeleteAriaLabel')}
                     >
-                      No
+                      {t('card.confirmNo')}
                     </button>
                   </>
                 ) : (
@@ -134,7 +136,7 @@ export default function NoteFeed({ notes, onDelete }: NoteFeedProps) {
                     onClick={() => setConfirmingId(note.id)}
                     className="text-xs cursor-pointer hover:opacity-80 transition-opacity"
                     style={{ color: 'var(--color-text-muted)' }}
-                    aria-label={`Delete note from ${formatFullDate(note.recorded_at)}`}
+                    aria-label={t('card.deleteAriaLabel', { date: formatFullDate(note.recorded_at) })}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"

@@ -3,22 +3,29 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 import { appointmentSchema, type AppointmentFormValues } from '@/lib/validations';
 import { ProviderPicker } from '@/components/shared/ProviderPicker';
 import type { Appointment } from '@/lib/types';
 
-const PROVIDER_TYPE_LABELS: Record<string, { label: string; color: string; bg: string }> = {
-  pcp: { label: 'Primary Care', color: 'var(--color-sage)', bg: 'rgba(74,222,128,0.15)' },
-  specialist: { label: 'Specialist', color: 'var(--accent-purple)', bg: 'rgba(167, 139, 250, 0.12)' },
-  lab: { label: 'Lab', color: 'var(--color-sage)', bg: 'rgba(96,165,250,0.15)' },
-  imaging: { label: 'Imaging', color: 'var(--color-warning)', bg: 'rgba(251,191,36,0.15)' },
-  urgent_care: { label: 'Urgent Care', color: 'var(--color-terracotta)', bg: 'rgba(224, 122, 95, 0.15)' },
-  hospital: { label: 'Hospital', color: 'var(--color-terracotta)', bg: 'rgba(224, 122, 95, 0.15)' },
-  pharmacy: { label: 'Pharmacy', color: 'var(--color-sage)', bg: 'rgba(96,165,250,0.15)' },
-  therapist: { label: 'Therapist', color: 'var(--accent-purple)', bg: 'rgba(167, 139, 250, 0.12)' },
-  dentist: { label: 'Dentist', color: 'var(--color-sage)', bg: 'rgba(74,222,128,0.15)' },
-  other: { label: 'Other', color: 'var(--color-text-muted)', bg: 'rgba(139,149,176,0.15)' },
+type ProviderTypeKey = 'pcp' | 'specialist' | 'lab' | 'imaging' | 'urgent_care' | 'hospital' | 'pharmacy' | 'therapist' | 'dentist' | 'other';
+
+const PROVIDER_TYPE_STYLE: Record<ProviderTypeKey, { color: string; bg: string }> = {
+  pcp: { color: 'var(--color-sage)', bg: 'rgba(74,222,128,0.15)' },
+  specialist: { color: 'var(--accent-purple)', bg: 'rgba(167, 139, 250, 0.12)' },
+  lab: { color: 'var(--color-sage)', bg: 'rgba(96,165,250,0.15)' },
+  imaging: { color: 'var(--color-warning)', bg: 'rgba(251,191,36,0.15)' },
+  urgent_care: { color: 'var(--color-terracotta)', bg: 'rgba(224, 122, 95, 0.15)' },
+  hospital: { color: 'var(--color-terracotta)', bg: 'rgba(224, 122, 95, 0.15)' },
+  pharmacy: { color: 'var(--color-sage)', bg: 'rgba(96,165,250,0.15)' },
+  therapist: { color: 'var(--accent-purple)', bg: 'rgba(167, 139, 250, 0.12)' },
+  dentist: { color: 'var(--color-sage)', bg: 'rgba(74,222,128,0.15)' },
+  other: { color: 'var(--color-text-muted)', bg: 'rgba(139,149,176,0.15)' },
 };
+
+function isProviderTypeKey(value: string): value is ProviderTypeKey {
+  return value in PROVIDER_TYPE_STYLE;
+}
 
 interface AppointmentCardProps {
   appointment: Appointment;
@@ -41,6 +48,8 @@ function formatDateTime(dateStr: string): string {
 }
 
 export default function AppointmentCard({ appointment, onUpdate, providerName, providerType }: AppointmentCardProps) {
+  const t = useTranslations('appointments');
+  const tCommon = useTranslations('common');
   const [notesExpanded, setNotesExpanded] = useState(false);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -50,9 +59,7 @@ export default function AppointmentCard({ appointment, onUpdate, providerName, p
 
   const isPast = new Date(appointment.appointment_date) < new Date();
 
-  const typeInfo = providerType && PROVIDER_TYPE_LABELS[providerType]
-    ? PROVIDER_TYPE_LABELS[providerType]
-    : null;
+  const typeKey = providerType && isProviderTypeKey(providerType) ? providerType : null;
 
   const {
     register,
@@ -99,7 +106,7 @@ export default function AppointmentCard({ appointment, onUpdate, providerName, p
               setEditProviderId(id);
               setValue('provider_id', id ?? '', { shouldValidate: true });
             }}
-            label="Provider"
+            label={t('form.providerLabel')}
           />
           {errors.provider_id && (
             <p className="text-xs -mt-2" style={{ color: 'var(--color-terracotta)' }}>{errors.provider_id.message}</p>
@@ -107,7 +114,7 @@ export default function AppointmentCard({ appointment, onUpdate, providerName, p
 
           <div>
             <label htmlFor={`edit-date-${appointment.id}`} className="block text-sm font-medium mb-1" style={{ color: 'var(--color-text-primary)' }}>
-              Date & Time
+              {t('form.dateTimeLabel')}
             </label>
             <input
               id={`edit-date-${appointment.id}`}
@@ -124,7 +131,7 @@ export default function AppointmentCard({ appointment, onUpdate, providerName, p
 
           <div>
             <label htmlFor={`edit-reason-${appointment.id}`} className="block text-sm font-medium mb-1" style={{ color: 'var(--color-text-primary)' }}>
-              Reason
+              {t('form.reasonLabel')}
             </label>
             <input
               id={`edit-reason-${appointment.id}`}
@@ -137,7 +144,7 @@ export default function AppointmentCard({ appointment, onUpdate, providerName, p
 
           <div>
             <label htmlFor={`edit-notes-${appointment.id}`} className="block text-sm font-medium mb-1" style={{ color: 'var(--color-text-primary)' }}>
-              Notes
+              {t('form.notesLabel')}
             </label>
             <textarea
               id={`edit-notes-${appointment.id}`}
@@ -151,7 +158,7 @@ export default function AppointmentCard({ appointment, onUpdate, providerName, p
 
           <div>
             <label htmlFor={`edit-followup-${appointment.id}`} className="block text-sm font-medium mb-1" style={{ color: 'var(--color-text-primary)' }}>
-              Follow-up Date
+              {t('form.followUpDateLabel')}
             </label>
             <input
               id={`edit-followup-${appointment.id}`}
@@ -170,7 +177,7 @@ export default function AppointmentCard({ appointment, onUpdate, providerName, p
               className="px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50"
               style={{ background: 'linear-gradient(135deg, var(--color-terracotta), var(--color-terracotta-light))', color: 'white', boxShadow: '0 4px 14px rgba(224, 122, 95, 0.3)' }}
             >
-              {saving ? 'Saving...' : 'Save'}
+              {saving ? tCommon('saving') : tCommon('save')}
             </button>
             <button
               type="button"
@@ -178,7 +185,7 @@ export default function AppointmentCard({ appointment, onUpdate, providerName, p
               className="px-4 py-2 rounded-lg border text-sm font-medium"
               style={{ border: '2px solid var(--color-soft-peach)', color: 'var(--color-bark)', backgroundColor: 'var(--color-cream)' }}
             >
-              Cancel
+              {tCommon('cancel')}
             </button>
           </div>
         </form>
@@ -195,14 +202,14 @@ export default function AppointmentCard({ appointment, onUpdate, providerName, p
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <h3 className="font-semibold text-base" style={{ color: 'var(--color-text-primary)' }}>
-              {providerName ?? 'Unknown Provider'}
+              {providerName ?? t('card.unknownProvider')}
             </h3>
-            {typeInfo && (
+            {typeKey && (
               <span
                 className="text-xs font-medium px-2 py-0.5 rounded-full"
-                style={{ color: typeInfo.color, backgroundColor: typeInfo.bg }}
+                style={{ color: PROVIDER_TYPE_STYLE[typeKey].color, backgroundColor: PROVIDER_TYPE_STYLE[typeKey].bg }}
               >
-                {typeInfo.label}
+                {t(`providerType.${typeKey}`)}
               </span>
             )}
             <span
@@ -213,7 +220,7 @@ export default function AppointmentCard({ appointment, onUpdate, providerName, p
                   : { color: 'var(--color-sage)', backgroundColor: 'rgba(74,222,128,0.15)' }
               }
             >
-              {isPast ? 'Past' : 'Upcoming'}
+              {isPast ? t('card.past') : t('card.upcoming')}
             </span>
           </div>
 
@@ -229,7 +236,7 @@ export default function AppointmentCard({ appointment, onUpdate, providerName, p
 
           {appointment.follow_up_date && (
             <p className="text-xs mt-2" style={{ color: 'var(--color-warning)' }}>
-              Follow-up: {new Date(appointment.follow_up_date).toLocaleDateString()}
+              {t('card.followUp', { date: new Date(appointment.follow_up_date).toLocaleDateString() })}
             </p>
           )}
         </div>
@@ -239,9 +246,9 @@ export default function AppointmentCard({ appointment, onUpdate, providerName, p
           onClick={() => setEditing(true)}
           className="text-xs px-3 py-1 rounded-lg border font-medium transition-colors shrink-0"
           style={{ borderColor: 'var(--border-card)', color: 'var(--color-sage)' }}
-          aria-label={`Edit appointment with ${providerName ?? 'provider'}`}
+          aria-label={t('card.editAriaLabel', { provider: providerName ?? t('card.unknownProvider') })}
         >
-          Edit
+          {tCommon('edit')}
         </button>
       </div>
 
@@ -265,7 +272,7 @@ export default function AppointmentCard({ appointment, onUpdate, providerName, p
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
             </svg>
-            Notes
+            {t('card.notes')}
           </button>
           {notesExpanded && (
             <p

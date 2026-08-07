@@ -1,21 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import type { Medication, MedicationFrequency } from '@/lib/types';
 import AddMedForm, { type AddMedFormData } from './AddMedForm';
-
-const FREQUENCY_LABELS: Record<string, string> = {
-  once_daily: 'Once Daily',
-  twice_daily: 'Twice Daily',
-  three_times_daily: 'Three Times Daily',
-  four_times_daily: 'Four Times Daily',
-  every_other_day: 'Every Other Day',
-  weekly: 'Weekly',
-  biweekly: 'Biweekly',
-  monthly: 'Monthly',
-  as_needed: 'As Needed',
-  other: 'Other',
-};
+import { useFrequencyLabel } from '@/hooks/useFrequencyLabel';
 
 function formatDate(dateStr: string | null): string {
   if (!dateStr) return '';
@@ -29,6 +18,8 @@ interface MedCardProps {
 }
 
 export default function MedCard({ medication, onUpdate }: MedCardProps) {
+  const t = useTranslations('medications.card');
+  const freqLabel = useFrequencyLabel();
   const [editing, setEditing] = useState(false);
 
   const handleUpdate = async (data: AddMedFormData) => {
@@ -42,15 +33,15 @@ export default function MedCard({ medication, onUpdate }: MedCardProps) {
         className="rounded-xl border p-5"
         style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-card)' }}
         role="article"
-        aria-label={`Editing ${medication.name}`}
+        aria-label={t('editingAriaLabel', { name: medication.name })}
       >
         <h3 className="text-sm font-semibold mb-4" style={{ color: 'var(--color-text-primary)' }}>
-          Edit Medication
+          {t('editMedication')}
         </h3>
         <AddMedForm
           onSubmit={handleUpdate}
           onCancel={() => setEditing(false)}
-          submitLabel="Save Changes"
+          submitLabel={t('saveChanges')}
           showActiveToggle
           initialValues={{
             name: medication.name,
@@ -73,7 +64,7 @@ export default function MedCard({ medication, onUpdate }: MedCardProps) {
       className="rounded-xl border p-5"
       style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-card)' }}
       role="article"
-      aria-label={`${medication.name} medication card`}
+      aria-label={t('cardAriaLabel', { name: medication.name })}
     >
       <div className="flex items-start justify-between gap-4">
         {/* Left: info */}
@@ -83,7 +74,7 @@ export default function MedCard({ medication, onUpdate }: MedCardProps) {
             <span
               className="inline-block w-2.5 h-2.5 rounded-full flex-shrink-0"
               style={{ backgroundColor: medication.active ? 'var(--color-sage)' : 'var(--color-text-muted)' }}
-              aria-label={medication.active ? 'Active' : 'Inactive'}
+              aria-label={medication.active ? t('active') : t('inactive')}
             />
             <h3 className="text-base font-semibold truncate" style={{ color: 'var(--color-text-primary)' }}>
               {medication.name}
@@ -102,7 +93,7 @@ export default function MedCard({ medication, onUpdate }: MedCardProps) {
             )}
             {medication.frequency && (
               <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                {FREQUENCY_LABELS[medication.frequency] ?? medication.frequency}
+                {freqLabel(medication.frequency)}
               </span>
             )}
           </div>
@@ -120,17 +111,17 @@ export default function MedCard({ medication, onUpdate }: MedCardProps) {
           {/* Dates */}
           <div className="flex items-center gap-3 mt-2 text-xs" style={{ color: 'var(--color-text-muted)' }}>
             {medication.start_date && (
-              <span>Started {formatDate(medication.start_date)}</span>
+              <span>{t('started', { date: formatDate(medication.start_date) })}</span>
             )}
             {medication.end_date && (
-              <span>Ended {formatDate(medication.end_date)}</span>
+              <span>{t('ended', { date: formatDate(medication.end_date) })}</span>
             )}
           </div>
 
           {/* Prescriber placeholder (ID shown; full resolution would need a join) */}
           {medication.prescriber_id && (
             <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>
-              Prescriber on file
+              {t('prescriberOnFile')}
             </p>
           )}
         </div>
@@ -142,9 +133,9 @@ export default function MedCard({ medication, onUpdate }: MedCardProps) {
             onClick={() => setEditing(true)}
             className="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer"
             style={{ backgroundColor: 'var(--color-cream)', color: 'var(--color-sage)' }}
-            aria-label={`Edit ${medication.name}`}
+            aria-label={t('editAriaLabel', { name: medication.name })}
           >
-            Edit
+            {t('edit')}
           </button>
         </div>
       </div>

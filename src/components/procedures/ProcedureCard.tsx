@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import type { Procedure } from '@/lib/types';
 import AddProcedureForm, { type AddProcedureFormData } from './AddProcedureForm';
 
@@ -15,6 +16,8 @@ interface ProcedureCardProps {
 }
 
 export default function ProcedureCard({ procedure, onUpdate, onDelete }: ProcedureCardProps) {
+  const t = useTranslations('procedures');
+  const tCommon = useTranslations('common');
   const [editing, setEditing] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
@@ -32,11 +35,11 @@ export default function ProcedureCard({ procedure, onUpdate, onDelete }: Procedu
   if (editing) {
     return (
       <div className="rounded-xl border p-5" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-card)' }}>
-        <h3 className="text-sm font-semibold mb-4" style={{ color: 'var(--color-text-primary)' }}>Edit Procedure</h3>
+        <h3 className="text-sm font-semibold mb-4" style={{ color: 'var(--color-text-primary)' }}>{t('card.editProcedure')}</h3>
         <AddProcedureForm
           onSubmit={handleUpdate}
           onCancel={() => setEditing(false)}
-          submitLabel="Save Changes"
+          submitLabel={t('card.saveChanges')}
           initialValues={{
             name: procedure.name,
             procedure_date: procedure.procedure_date,
@@ -59,13 +62,13 @@ export default function ProcedureCard({ procedure, onUpdate, onDelete }: Procedu
             </h3>
             {procedure.cpt_code && (
               <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--color-cream)', color: 'var(--accent-purple)' }}>
-                CPT: {procedure.cpt_code}
+                {t('card.cptCode', { code: procedure.cpt_code })}
               </span>
             )}
           </div>
           <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{formatDate(procedure.procedure_date)}</p>
           {procedure.provider_id && (
-            <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>Provider on file</p>
+            <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>{t('card.providerOnFile')}</p>
           )}
           {procedure.notes && (
             <p className="text-sm mt-2" style={{ color: 'var(--color-text-muted)' }}>{procedure.notes}</p>
@@ -78,7 +81,7 @@ export default function ProcedureCard({ procedure, onUpdate, onDelete }: Procedu
             className="px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer"
             style={{ backgroundColor: 'var(--color-cream)', color: 'var(--color-sage)' }}
           >
-            Edit
+            {tCommon('edit')}
           </button>
           {confirmDelete ? (
             <div className="flex gap-1">
@@ -88,7 +91,7 @@ export default function ProcedureCard({ procedure, onUpdate, onDelete }: Procedu
                 className="px-2 py-1 rounded text-xs font-medium cursor-pointer"
                 style={{ backgroundColor: 'var(--color-terracotta)', color: 'var(--color-bark)' }}
               >
-                Yes
+                {t('card.confirmYes')}
               </button>
               <button
                 type="button"
@@ -96,7 +99,7 @@ export default function ProcedureCard({ procedure, onUpdate, onDelete }: Procedu
                 className="px-2 py-1 rounded text-xs font-medium cursor-pointer"
                 style={{ color: 'var(--color-text-muted)' }}
               >
-                No
+                {t('card.confirmNo')}
               </button>
             </div>
           ) : (
@@ -106,7 +109,7 @@ export default function ProcedureCard({ procedure, onUpdate, onDelete }: Procedu
               className="px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer"
               style={{ backgroundColor: 'transparent', color: 'var(--color-terracotta)', border: '1px solid #F87171' }}
             >
-              Delete
+              {tCommon('delete')}
             </button>
           )}
         </div>

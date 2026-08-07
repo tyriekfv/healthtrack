@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback, useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useLabResults } from '@/hooks/useLabResults';
 import { useCapabilities } from '@/hooks/useCapabilities';
 import type { ParsedLabResult } from '@/lib/claude/parse-lab';
@@ -16,6 +17,8 @@ type View = 'trends' | 'visits';
 type Flow = 'idle' | 'import' | 'review';
 
 export default function LabsPage() {
+  const t = useTranslations('labs');
+  const tCommon = useTranslations('common');
   const { capabilities } = useCapabilities();
   // PDF import runs through the AI parser — hide its entry points when the
   // instance has no ANTHROPIC_API_KEY configured.
@@ -155,14 +158,14 @@ export default function LabsPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
-            Upload Lab Report
+            {t('uploadLabReport')}
           </h1>
           <button
             onClick={handleCancel}
             className="text-sm cursor-pointer hover:opacity-80"
             style={{ color: 'var(--color-text-muted)' }}
           >
-            Cancel
+            {tCommon('cancel')}
           </button>
         </div>
         <LabImport onParsed={handleParsed} />
@@ -175,7 +178,7 @@ export default function LabsPage() {
     return (
       <div className="space-y-6">
         <h1 className="text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
-          Review Parsed Results
+          {t('reviewParsedResults')}
         </h1>
         <LabValidationReview
           parsedData={parsedData}
@@ -194,7 +197,7 @@ export default function LabsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
-          Lab Results
+          {t('title')}
         </h1>
         {!aiHidden && (
           <button
@@ -202,25 +205,25 @@ export default function LabsPage() {
             className="px-4 py-2 rounded-lg text-sm font-medium cursor-pointer transition-colors"
             style={{ background: 'linear-gradient(135deg, var(--color-terracotta), var(--color-terracotta-light))', color: 'white', boxShadow: '0 4px 14px rgba(224, 122, 95, 0.3)' }}
           >
-            Upload Lab PDF
+            {t('uploadLabPdf')}
           </button>
         )}
       </div>
 
       {/* Tab toggle */}
       <div className="flex gap-2">
-        {(['trends', 'visits'] as const).map((t) => (
+        {(['trends', 'visits'] as const).map((tabKey) => (
           <button
-            key={t}
-            onClick={() => setTab(t)}
+            key={tabKey}
+            onClick={() => setTab(tabKey)}
             className="px-4 py-2 rounded-lg text-sm font-medium transition-colors capitalize cursor-pointer"
             style={{
-              backgroundColor: tab === t ? 'var(--color-sage)' : 'var(--bg-card)',
-              color: tab === t ? 'var(--bg-primary)' : 'var(--color-text-muted)',
-              border: tab === t ? 'none' : '1px solid #1E2642',
+              backgroundColor: tab === tabKey ? 'var(--color-sage)' : 'var(--bg-card)',
+              color: tab === tabKey ? 'var(--bg-primary)' : 'var(--color-text-muted)',
+              border: tab === tabKey ? 'none' : '1px solid #1E2642',
             }}
           >
-            {t}
+            {tabKey === 'trends' ? t('tabTrends') : t('tabVisits')}
           </button>
         ))}
       </div>
@@ -269,17 +272,17 @@ export default function LabsPage() {
                 />
               </svg>
             }
-            title="No lab results yet"
+            title={t('noResultsTitle')}
             description={
               aiHidden
-                ? 'Lab results imported on this instance will appear here.'
-                : "Upload a lab PDF to get started. We'll parse your results and track trends over time."
+                ? t('noResultsDescriptionNoAi')
+                : t('noResultsDescription')
             }
             action={
               aiHidden
                 ? undefined
                 : {
-                    label: 'Upload Lab PDF',
+                    label: t('uploadLabPdf'),
                     onClick: () => setFlow('import'),
                   }
             }
@@ -293,7 +296,7 @@ export default function LabsPage() {
           {needsAttention.length > 0 && (
             <section className="space-y-3">
               <h2 className="text-sm font-semibold uppercase tracking-wider" style={{ color: 'var(--color-terracotta)' }}>
-                Needs Attention
+                {t('needsAttention')}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {needsAttention.map(({ testName, results: pts }) => (
@@ -305,7 +308,7 @@ export default function LabsPage() {
           {withinRange.length > 0 && (
             <section className="space-y-3">
               <h2 className="text-sm font-semibold uppercase tracking-wider" style={{ color: 'var(--color-sage)' }}>
-                Within Range
+                {t('withinRange')}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {withinRange.map(({ testName, results: pts }) => (

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import type { LabVisit, LabResult, Flag } from '@/lib/types';
 import FlagBadge from '@/components/shared/FlagBadge';
 
@@ -19,13 +20,7 @@ const inputStyle = {
   color: 'var(--color-text-primary)',
 };
 
-const FLAG_OPTIONS: { value: string; label: string }[] = [
-  { value: '', label: '--' },
-  { value: 'normal', label: 'Normal' },
-  { value: 'high', label: 'High' },
-  { value: 'low', label: 'Low' },
-  { value: 'critical', label: 'Critical' },
-];
+const FLAG_VALUES = ['', 'normal', 'high', 'low', 'critical'] as const;
 
 interface ResultDraft {
   panel_name: string;
@@ -80,6 +75,19 @@ export default function VisitCard({
   onUpdateResult,
   onDeleteResult,
 }: VisitCardProps) {
+  const t = useTranslations('labs.visitCard');
+  const tCommon = useTranslations('common');
+
+  const flagLabel = (value: string): string => {
+    switch (value) {
+      case 'normal': return t('flagNormal');
+      case 'high': return t('flagHigh');
+      case 'low': return t('flagLow');
+      case 'critical': return t('flagCritical');
+      default: return t('flagNone');
+    }
+  };
+
   const [expanded, setExpanded] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -107,7 +115,10 @@ export default function VisitCard({
 
   async function handleDelete() {
     const confirmed = window.confirm(
-      `Delete this ${new Date(visit.visit_date).toLocaleDateString()} report and all ${visit.results.length} results? This cannot be undone.`,
+      t('deleteConfirm', {
+        date: new Date(visit.visit_date).toLocaleDateString(),
+        count: visit.results.length,
+      }),
     );
     if (!confirmed) return;
 
@@ -116,7 +127,7 @@ export default function VisitCard({
     try {
       await onDelete(visit.id);
     } catch (error) {
-      setDeleteError(error instanceof Error ? error.message : 'Failed to delete report');
+      setDeleteError(error instanceof Error ? error.message : t('deleteFailed'));
     } finally {
       setDeleting(false);
     }
@@ -132,7 +143,7 @@ export default function VisitCard({
       });
       setEditingVisit(false);
     } catch (error) {
-      setVisitEditError(error instanceof Error ? error.message : 'Failed to save');
+      setVisitEditError(error instanceof Error ? error.message : t('saveFailed'));
     } finally {
       setSavingVisit(false);
     }
@@ -151,21 +162,21 @@ export default function VisitCard({
       await onUpdateResult(id, draftToPayload(resultDraft));
       setEditingResultId(null);
     } catch (error) {
-      setResultError(error instanceof Error ? error.message : 'Failed to save result');
+      setResultError(error instanceof Error ? error.message : t('saveResultFailed'));
     } finally {
       setSavingResultId(null);
     }
   }
 
   async function handleDeleteResult(id: string) {
-    if (!window.confirm('Delete this result?')) return;
+    if (!window.confirm(t('deleteResultConfirm'))) return;
     setDeletingResultId(id);
     setResultError(null);
     try {
       await onDeleteResult(id);
       if (editingResultId === id) setEditingResultId(null);
     } catch (error) {
-      setResultError(error instanceof Error ? error.message : 'Failed to delete result');
+      setResultError(error instanceof Error ? error.message : t('deleteResultFailed'));
     } finally {
       setDeletingResultId(null);
     }
@@ -179,7 +190,7 @@ export default function VisitCard({
       setAddDraft(EMPTY_DRAFT);
       setAddingResult(false);
     } catch (error) {
-      setAddError(error instanceof Error ? error.message : 'Failed to add result');
+      setAddError(error instanceof Error ? error.message : t('addResultFailed'));
     } finally {
       setSavingAdd(false);
     }
@@ -218,15 +229,15 @@ export default function VisitCard({
                 >
                   <path d="M3 3.5A1.5 1.5 0 014.5 2h6.879a1.5 1.5 0 011.06.44l4.122 4.12A1.5 1.5 0 0117 7.622V16.5a1.5 1.5 0 01-1.5 1.5h-11A1.5 1.5 0 013 16.5v-13z" />
                 </svg>
-                PDF
+                {t('pdf')}
               </span>
             )}
           </div>
           <div className="flex items-center gap-3 text-xs" style={{ color: 'var(--color-text-muted)' }}>
-            <span>{visit.results.length} results</span>
+            <span>{t('resultsCount', { count: visit.results.length })}</span>
             {flaggedCount > 0 && (
               <span style={{ color: 'var(--color-terracotta)' }}>
-                {flaggedCount} flagged
+                {t('flaggedCount', { count: flaggedCount })}
               </span>
             )}
           </div>
@@ -265,7 +276,7 @@ export default function VisitCard({
                     type="text"
                     value={visitNotesDraft}
                     onChange={(e) => setVisitNotesDraft(e.target.value)}
-                    placeholder="Notes"
+                    placeholder={t('notesPlaceholder')}
                     className="flex-1 min-w-[160px] px-2 py-1.5 rounded-lg border text-xs"
                     style={inputStyle}
                   />
@@ -281,7 +292,7 @@ export default function VisitCard({
                     className="rounded-lg px-3 py-1.5 text-xs font-medium cursor-pointer disabled:opacity-50"
                     style={{ backgroundColor: 'var(--color-sage)', color: 'var(--bg-primary)' }}
                   >
-                    {savingVisit ? 'Saving…' : 'Save'}
+                    {savingVisit ? tCommon('saving') : tCommon('save')}
                   </button>
                   <button
                     type="button"
@@ -294,14 +305,14 @@ export default function VisitCard({
                     className="rounded-lg border px-3 py-1.5 text-xs font-medium cursor-pointer"
                     style={{ borderColor: 'var(--border-card)', color: 'var(--color-text-muted)' }}
                   >
-                    Cancel
+                    {tCommon('cancel')}
                   </button>
                 </div>
               </div>
             ) : (
               <div className="flex items-center justify-between gap-3">
                 <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-                  {visit.notes || 'No notes'}
+                  {visit.notes || t('noNotes')}
                 </p>
                 <button
                   type="button"
@@ -309,7 +320,7 @@ export default function VisitCard({
                   className="text-xs font-medium cursor-pointer shrink-0"
                   style={{ color: 'var(--color-sage)' }}
                 >
-                  Edit date/notes
+                  {t('editDateNotes')}
                 </button>
               </div>
             )}
@@ -319,7 +330,7 @@ export default function VisitCard({
             <table className="w-full text-xs">
               <thead>
                 <tr style={{ borderBottom: '1px solid var(--border-card)' }}>
-                  {['Panel', 'Test', 'Value', 'Unit', 'Range', 'Flag', ''].map((h) => (
+                  {[t('panelHeader'), t('testHeader'), t('valueHeader'), t('unitHeader'), t('rangeHeader'), t('flagHeader'), ''].map((h) => (
                     <th
                       key={h}
                       className="text-left px-3 py-2 font-medium whitespace-nowrap"
@@ -377,7 +388,7 @@ export default function VisitCard({
                               step="any"
                               value={resultDraft.reference_range_low}
                               onChange={(e) => setResultDraft((d) => ({ ...d, reference_range_low: e.target.value }))}
-                              placeholder="low"
+                              placeholder={t('lowPlaceholder')}
                               className="w-14 px-1.5 py-1 rounded border text-xs font-mono"
                               style={inputStyle}
                             />
@@ -387,7 +398,7 @@ export default function VisitCard({
                               step="any"
                               value={resultDraft.reference_range_high}
                               onChange={(e) => setResultDraft((d) => ({ ...d, reference_range_high: e.target.value }))}
-                              placeholder="high"
+                              placeholder={t('highPlaceholder')}
                               className="w-14 px-1.5 py-1 rounded border text-xs font-mono"
                               style={inputStyle}
                             />
@@ -400,8 +411,8 @@ export default function VisitCard({
                             className="px-1.5 py-1 rounded border text-xs"
                             style={inputStyle}
                           >
-                            {FLAG_OPTIONS.map((opt) => (
-                              <option key={opt.value} value={opt.value}>{opt.label}</option>
+                            {FLAG_VALUES.map((value) => (
+                              <option key={value} value={value}>{flagLabel(value)}</option>
                             ))}
                           </select>
                         </td>
@@ -413,7 +424,7 @@ export default function VisitCard({
                             className="text-xs font-medium cursor-pointer disabled:opacity-50 mr-2"
                             style={{ color: 'var(--color-sage)' }}
                           >
-                            {savingResultId === r.id ? 'Saving…' : 'Save'}
+                            {savingResultId === r.id ? tCommon('saving') : tCommon('save')}
                           </button>
                           <button
                             type="button"
@@ -421,7 +432,7 @@ export default function VisitCard({
                             className="text-xs font-medium cursor-pointer"
                             style={{ color: 'var(--color-text-muted)' }}
                           >
-                            Cancel
+                            {tCommon('cancel')}
                           </button>
                         </td>
                       </tr>
@@ -460,8 +471,8 @@ export default function VisitCard({
                           onClick={() => startEditResult(r)}
                           className="cursor-pointer mr-2"
                           style={{ color: 'var(--color-sage)' }}
-                          aria-label={`Edit ${r.test_name}`}
-                          title="Edit"
+                          aria-label={t('editAriaLabel', { test: r.test_name })}
+                          title={tCommon('edit')}
                         >
                           ✎
                         </button>
@@ -471,8 +482,8 @@ export default function VisitCard({
                           disabled={deletingResultId === r.id}
                           className="cursor-pointer disabled:opacity-50"
                           style={{ color: 'var(--color-terracotta)' }}
-                          aria-label={`Delete ${r.test_name}`}
-                          title="Delete"
+                          aria-label={t('deleteAriaLabel', { test: r.test_name })}
+                          title={tCommon('delete')}
                         >
                           ✕
                         </button>
@@ -487,7 +498,7 @@ export default function VisitCard({
                       <input
                         value={addDraft.panel_name}
                         onChange={(e) => setAddDraft((d) => ({ ...d, panel_name: e.target.value }))}
-                        placeholder="Panel"
+                        placeholder={t('panelPlaceholder')}
                         className="w-24 px-1.5 py-1 rounded border text-xs"
                         style={inputStyle}
                       />
@@ -496,7 +507,7 @@ export default function VisitCard({
                       <input
                         value={addDraft.test_name}
                         onChange={(e) => setAddDraft((d) => ({ ...d, test_name: e.target.value }))}
-                        placeholder="Test name"
+                        placeholder={t('testNamePlaceholder')}
                         className="w-36 px-1.5 py-1 rounded border text-xs"
                         style={inputStyle}
                       />
@@ -507,7 +518,7 @@ export default function VisitCard({
                         step="any"
                         value={addDraft.value}
                         onChange={(e) => setAddDraft((d) => ({ ...d, value: e.target.value }))}
-                        placeholder="Value"
+                        placeholder={t('valuePlaceholder')}
                         className="w-20 px-1.5 py-1 rounded border text-xs font-mono"
                         style={inputStyle}
                       />
@@ -516,7 +527,7 @@ export default function VisitCard({
                       <input
                         value={addDraft.unit}
                         onChange={(e) => setAddDraft((d) => ({ ...d, unit: e.target.value }))}
-                        placeholder="Unit"
+                        placeholder={t('unitPlaceholder')}
                         className="w-16 px-1.5 py-1 rounded border text-xs"
                         style={inputStyle}
                       />
@@ -528,7 +539,7 @@ export default function VisitCard({
                           step="any"
                           value={addDraft.reference_range_low}
                           onChange={(e) => setAddDraft((d) => ({ ...d, reference_range_low: e.target.value }))}
-                          placeholder="low"
+                          placeholder={t('lowPlaceholder')}
                           className="w-14 px-1.5 py-1 rounded border text-xs font-mono"
                           style={inputStyle}
                         />
@@ -538,7 +549,7 @@ export default function VisitCard({
                           step="any"
                           value={addDraft.reference_range_high}
                           onChange={(e) => setAddDraft((d) => ({ ...d, reference_range_high: e.target.value }))}
-                          placeholder="high"
+                          placeholder={t('highPlaceholder')}
                           className="w-14 px-1.5 py-1 rounded border text-xs font-mono"
                           style={inputStyle}
                         />
@@ -551,8 +562,8 @@ export default function VisitCard({
                         className="px-1.5 py-1 rounded border text-xs"
                         style={inputStyle}
                       >
-                        {FLAG_OPTIONS.map((opt) => (
-                          <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        {FLAG_VALUES.map((value) => (
+                          <option key={value} value={value}>{flagLabel(value)}</option>
                         ))}
                       </select>
                     </td>
@@ -564,7 +575,7 @@ export default function VisitCard({
                         className="text-xs font-medium cursor-pointer disabled:opacity-50 mr-2"
                         style={{ color: 'var(--color-sage)' }}
                       >
-                        {savingAdd ? 'Adding…' : 'Add'}
+                        {savingAdd ? t('adding') : tCommon('add')}
                       </button>
                       <button
                         type="button"
@@ -576,7 +587,7 @@ export default function VisitCard({
                         className="text-xs font-medium cursor-pointer"
                         style={{ color: 'var(--color-text-muted)' }}
                       >
-                        Cancel
+                        {tCommon('cancel')}
                       </button>
                     </td>
                   </tr>
@@ -604,7 +615,7 @@ export default function VisitCard({
                 className="text-xs font-medium cursor-pointer"
                 style={{ color: 'var(--color-sage)' }}
               >
-                + Add result
+                {t('addResult')}
               </button>
             ) : (
               <span />
@@ -625,7 +636,7 @@ export default function VisitCard({
                   color: 'var(--color-terracotta)',
                 }}
               >
-                {deleting ? 'Deleting…' : 'Delete report and all results'}
+                {deleting ? t('deleting') : t('deleteReportButton')}
               </button>
             </div>
           </div>

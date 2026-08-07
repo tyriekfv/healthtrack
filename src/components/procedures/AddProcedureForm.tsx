@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 import { procedureSchema, type ProcedureFormValues } from '@/lib/validations';
 import { ProviderPicker } from '@/components/shared/ProviderPicker';
 import { MedicalAutocomplete } from '@/components/shared/MedicalAutocomplete';
@@ -27,8 +28,11 @@ export default function AddProcedureForm({
   onSubmit,
   onCancel,
   initialValues,
-  submitLabel = 'Add Procedure',
+  submitLabel,
 }: AddProcedureFormProps) {
+  const t = useTranslations('procedures');
+  const tCommon = useTranslations('common');
+  const resolvedSubmitLabel = submitLabel ?? t('addProcedure');
   const [submitting, setSubmitting] = useState(false);
   const [cptCode, setCptCode] = useState<string | null>(initialValues?.cpt_code ?? null);
   const [providerId, setProviderId] = useState<string | null>(initialValues?.provider_id ?? null);
@@ -63,7 +67,7 @@ export default function AddProcedureForm({
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4" noValidate>
       <MedicalAutocomplete
-        label="Procedure Name"
+        label={t('form.nameLabel')}
         value={watch('name')}
         code={cptCode}
         onChange={(val, code) => {
@@ -71,7 +75,7 @@ export default function AddProcedureForm({
           setCptCode(code);
         }}
         searchFn={searchProcedures}
-        placeholder="Search procedures (e.g. Cholecystectomy)..."
+        placeholder={t('form.namePlaceholder')}
         required
         error={errors.name?.message}
         id="procedure-name"
@@ -79,7 +83,7 @@ export default function AddProcedureForm({
 
       <div>
         <label htmlFor="procedure-date" className="block text-sm font-medium mb-1" style={labelStyle}>
-          Date <span style={{ color: 'var(--color-terracotta)' }}>*</span>
+          {t('form.dateLabel')} <span style={{ color: 'var(--color-terracotta)' }}>*</span>
         </label>
         <input
           id="procedure-date"
@@ -93,17 +97,17 @@ export default function AddProcedureForm({
         )}
       </div>
 
-      <ProviderPicker value={providerId} onChange={setProviderId} label="Provider" />
+      <ProviderPicker value={providerId} onChange={setProviderId} label={t('form.providerLabel')} />
 
       <div>
         <label htmlFor="procedure-notes" className="block text-sm font-medium mb-1" style={labelStyle}>
-          Notes
+          {t('form.notesLabel')}
         </label>
         <textarea
           id="procedure-notes"
           {...register('notes')}
           rows={2}
-          placeholder="Additional notes..."
+          placeholder={t('form.notesPlaceholder')}
           className="w-full px-3 py-2.5 rounded-xl border text-sm focus:outline-none resize-none"
           style={inputStyle}
         />
@@ -116,7 +120,7 @@ export default function AddProcedureForm({
           className="px-5 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer disabled:opacity-50"
           style={{ background: 'linear-gradient(135deg, var(--color-terracotta), var(--color-terracotta-light))', color: 'white', boxShadow: '0 4px 14px rgba(224, 122, 95, 0.3)' }}
         >
-          {submitting ? 'Saving...' : submitLabel}
+          {submitting ? t('form.saving') : resolvedSubmitLabel}
         </button>
         {onCancel && (
           <button
@@ -125,7 +129,7 @@ export default function AddProcedureForm({
             className="px-5 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer"
             style={{ backgroundColor: 'transparent', color: 'var(--color-text-muted)', border: '1px solid var(--border-card)' }}
           >
-            Cancel
+            {tCommon('cancel')}
           </button>
         )}
       </div>

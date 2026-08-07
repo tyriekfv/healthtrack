@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { useAppointments } from '@/hooks/useAppointments';
 import { useProviders } from '@/hooks/useProviders';
 import AppointmentCard from '@/components/appointments/AppointmentCard';
@@ -11,13 +12,11 @@ import type { AppointmentFormValues } from '@/lib/validations';
 
 type TimeFilter = 'upcoming' | 'past' | 'all';
 
-const TIME_FILTERS: { value: TimeFilter; label: string }[] = [
-  { value: 'upcoming', label: 'Upcoming' },
-  { value: 'past', label: 'Past' },
-  { value: 'all', label: 'All' },
-];
+const TIME_FILTER_VALUES: TimeFilter[] = ['upcoming', 'past', 'all'];
 
 export default function AppointmentsPage() {
+  const t = useTranslations('appointments');
+  const tCommon = useTranslations('common');
   const { appointments, loading, error, addAppointment, updateAppointment } = useAppointments();
   const { providers } = useProviders();
   const [showAddForm, setShowAddForm] = useState(false);
@@ -65,7 +64,7 @@ export default function AppointmentsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <h1 className="text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
-          Appointments
+          {t('title')}
         </h1>
         <button
           type="button"
@@ -73,7 +72,7 @@ export default function AppointmentsPage() {
           className="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
           style={{ background: 'linear-gradient(135deg, var(--color-terracotta), var(--color-terracotta-light))', color: 'white', boxShadow: '0 4px 14px rgba(224, 122, 95, 0.3)' }}
         >
-          {showAddForm ? 'Cancel' : 'Add Appointment'}
+          {showAddForm ? tCommon('cancel') : t('addAppointment')}
         </button>
       </div>
 
@@ -91,16 +90,16 @@ export default function AppointmentsPage() {
       )}
 
       {/* Time filter tabs */}
-      <div className="flex gap-2 flex-wrap" role="tablist" aria-label="Filter appointments by time">
-        {TIME_FILTERS.map((filter) => {
-          const isActive = timeFilter === filter.value;
+      <div className="flex gap-2 flex-wrap" role="tablist" aria-label={t('filterAriaLabel')}>
+        {TIME_FILTER_VALUES.map((value) => {
+          const isActive = timeFilter === value;
           return (
             <button
-              key={filter.value}
+              key={value}
               type="button"
               role="tab"
               aria-selected={isActive}
-              onClick={() => setTimeFilter(filter.value)}
+              onClick={() => setTimeFilter(value)}
               className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
               style={
                 isActive
@@ -108,7 +107,7 @@ export default function AppointmentsPage() {
                   : { backgroundColor: 'transparent', color: 'var(--color-text-muted)', border: '1px solid var(--border-card)' }
               }
             >
-              {filter.label}
+              {t(`filters.${value}`)}
             </button>
           );
         })}
@@ -116,7 +115,7 @@ export default function AppointmentsPage() {
 
       {/* Content */}
       {loading ? (
-        <div className="space-y-3" aria-busy="true" aria-label="Loading appointments">
+        <div className="space-y-3" aria-busy="true" aria-label={t('loadingLabel')}>
           <Skeleton variant="card" />
           <Skeleton variant="card" />
           <Skeleton variant="card" />
@@ -134,22 +133,22 @@ export default function AppointmentsPage() {
             }
             title={
               timeFilter === 'all'
-                ? 'No appointments yet'
+                ? t('noAppointmentsTitle')
                 : timeFilter === 'upcoming'
-                  ? 'No upcoming appointments'
-                  : 'No past appointments'
+                  ? t('noUpcomingTitle')
+                  : t('noPastTitle')
             }
             description={
               timeFilter === 'all'
-                ? 'Keep track of your doctor visits, follow-ups, and upcoming appointments.'
+                ? t('noAppointmentsDescription')
                 : timeFilter === 'upcoming'
-                  ? 'You have no upcoming appointments scheduled.'
-                  : 'You have no past appointment records.'
+                  ? t('noUpcomingDescription')
+                  : t('noPastDescription')
             }
             action={
               timeFilter !== 'past'
                 ? {
-                    label: 'Add Appointment',
+                    label: t('addAppointment'),
                     onClick: () => setShowAddForm(true),
                   }
                 : undefined

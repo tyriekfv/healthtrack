@@ -3,15 +3,16 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 import { conditionSchema, type ConditionFormValues } from '@/lib/validations';
 import { ProviderPicker } from '@/components/shared/ProviderPicker';
 import type { Condition, ConditionStatus } from '@/lib/types';
 
-const STATUS_CONFIG: Record<ConditionStatus, { label: string; color: string; bg: string }> = {
-  active: { label: 'Active', color: 'var(--color-sage)', bg: 'rgba(74,222,128,0.15)' },
-  resolved: { label: 'Resolved', color: 'var(--color-text-muted)', bg: 'rgba(139,149,176,0.15)' },
-  managed: { label: 'Managed', color: 'var(--color-sage)', bg: 'rgba(96,165,250,0.15)' },
-  monitoring: { label: 'Monitoring', color: 'var(--color-warning)', bg: 'rgba(251,191,36,0.15)' },
+const STATUS_STYLE: Record<ConditionStatus, { color: string; bg: string }> = {
+  active: { color: 'var(--color-sage)', bg: 'rgba(74,222,128,0.15)' },
+  resolved: { color: 'var(--color-text-muted)', bg: 'rgba(139,149,176,0.15)' },
+  managed: { color: 'var(--color-sage)', bg: 'rgba(96,165,250,0.15)' },
+  monitoring: { color: 'var(--color-warning)', bg: 'rgba(251,191,36,0.15)' },
 };
 
 interface ConditionCardProps {
@@ -20,13 +21,16 @@ interface ConditionCardProps {
 }
 
 export default function ConditionCard({ condition, onUpdate }: ConditionCardProps) {
+  const t = useTranslations('conditions');
+  const tCommon = useTranslations('common');
   const [notesExpanded, setNotesExpanded] = useState(false);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editProviderId, setEditProviderId] = useState<string | null>(condition.provider_id);
   const [editNotes, setEditNotes] = useState(condition.notes ?? '');
 
-  const statusInfo = STATUS_CONFIG[condition.status];
+  const statusInfo = STATUS_STYLE[condition.status];
+  const statusLabel = t(`status.${condition.status}`);
 
   const {
     register,
@@ -75,7 +79,7 @@ export default function ConditionCard({ condition, onUpdate }: ConditionCardProp
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
             <label htmlFor={`edit-name-${condition.id}`} className="block text-sm font-medium mb-1" style={{ color: 'var(--color-text-primary)' }}>
-              Name
+              {t('form.nameLabel')}
             </label>
             <input
               id={`edit-name-${condition.id}`}
@@ -90,7 +94,7 @@ export default function ConditionCard({ condition, onUpdate }: ConditionCardProp
 
           <div>
             <label htmlFor={`edit-status-${condition.id}`} className="block text-sm font-medium mb-1" style={{ color: 'var(--color-text-primary)' }}>
-              Status
+              {t('form.statusLabel')}
             </label>
             <select
               id={`edit-status-${condition.id}`}
@@ -98,16 +102,16 @@ export default function ConditionCard({ condition, onUpdate }: ConditionCardProp
               className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none"
               style={{ backgroundColor: 'var(--bg-primary)', borderColor: 'var(--border-card)', color: 'var(--color-text-primary)' }}
             >
-              <option value="active">Active</option>
-              <option value="resolved">Resolved</option>
-              <option value="managed">Managed</option>
-              <option value="monitoring">Monitoring</option>
+              <option value="active">{t('status.active')}</option>
+              <option value="resolved">{t('status.resolved')}</option>
+              <option value="managed">{t('status.managed')}</option>
+              <option value="monitoring">{t('status.monitoring')}</option>
             </select>
           </div>
 
           <div>
             <label htmlFor={`edit-date-${condition.id}`} className="block text-sm font-medium mb-1" style={{ color: 'var(--color-text-primary)' }}>
-              Diagnosed Date
+              {t('form.diagnosedDateLabel')}
             </label>
             <input
               id={`edit-date-${condition.id}`}
@@ -123,12 +127,12 @@ export default function ConditionCard({ condition, onUpdate }: ConditionCardProp
           <ProviderPicker
             value={editProviderId}
             onChange={setEditProviderId}
-            label="Provider"
+            label={t('form.providerLabel')}
           />
 
           <div>
             <label htmlFor={`edit-notes-${condition.id}`} className="block text-sm font-medium mb-1" style={{ color: 'var(--color-text-primary)' }}>
-              Notes
+              {t('form.notesLabel')}
             </label>
             <textarea
               id={`edit-notes-${condition.id}`}
@@ -147,7 +151,7 @@ export default function ConditionCard({ condition, onUpdate }: ConditionCardProp
               className="px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50"
               style={{ background: 'linear-gradient(135deg, var(--color-terracotta), var(--color-terracotta-light))', color: 'white', boxShadow: '0 4px 14px rgba(224, 122, 95, 0.3)' }}
             >
-              {saving ? 'Saving...' : 'Save'}
+              {saving ? tCommon('saving') : tCommon('save')}
             </button>
             <button
               type="button"
@@ -155,7 +159,7 @@ export default function ConditionCard({ condition, onUpdate }: ConditionCardProp
               className="px-4 py-2 rounded-lg border text-sm font-medium"
               style={{ border: '2px solid var(--color-soft-peach)', color: 'var(--color-bark)', backgroundColor: 'var(--color-cream)' }}
             >
-              Cancel
+              {tCommon('cancel')}
             </button>
           </div>
         </form>
@@ -178,20 +182,20 @@ export default function ConditionCard({ condition, onUpdate }: ConditionCardProp
               className="text-xs font-medium px-2 py-0.5 rounded-full"
               style={{ color: statusInfo.color, backgroundColor: statusInfo.bg }}
             >
-              {statusInfo.label}
+              {statusLabel}
             </span>
           </div>
 
           {condition.diagnosed_date && (
             <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
-              Diagnosed: {new Date(condition.diagnosed_date).toLocaleDateString()}
+              {t('card.diagnosed', { date: new Date(condition.diagnosed_date).toLocaleDateString() })}
             </p>
           )}
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
           <div className="relative">
-            <label htmlFor={`status-change-${condition.id}`} className="sr-only">Change status</label>
+            <label htmlFor={`status-change-${condition.id}`} className="sr-only">{t('card.changeStatusSr')}</label>
             <select
               id={`status-change-${condition.id}`}
               value={condition.status}
@@ -199,12 +203,12 @@ export default function ConditionCard({ condition, onUpdate }: ConditionCardProp
               disabled={saving}
               className="text-xs px-2 py-1 rounded-lg border appearance-none pr-6 focus:outline-none"
               style={{ backgroundColor: 'var(--bg-primary)', borderColor: 'var(--border-card)', color: 'var(--color-text-muted)' }}
-              aria-label="Change condition status"
+              aria-label={t('card.changeStatusAriaLabel')}
             >
-              <option value="active">Active</option>
-              <option value="resolved">Resolved</option>
-              <option value="managed">Managed</option>
-              <option value="monitoring">Monitoring</option>
+              <option value="active">{t('status.active')}</option>
+              <option value="resolved">{t('status.resolved')}</option>
+              <option value="managed">{t('status.managed')}</option>
+              <option value="monitoring">{t('status.monitoring')}</option>
             </select>
           </div>
           <button
@@ -212,9 +216,9 @@ export default function ConditionCard({ condition, onUpdate }: ConditionCardProp
             onClick={() => setEditing(true)}
             className="text-xs px-3 py-1 rounded-lg border font-medium transition-colors"
             style={{ borderColor: 'var(--border-card)', color: 'var(--color-sage)' }}
-            aria-label={`Edit condition ${condition.name}`}
+            aria-label={t('card.editAriaLabel', { name: condition.name })}
           >
-            Edit
+            {tCommon('edit')}
           </button>
         </div>
       </div>
@@ -239,7 +243,7 @@ export default function ConditionCard({ condition, onUpdate }: ConditionCardProp
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
             </svg>
-            Notes
+            {t('card.notes')}
           </button>
           {notesExpanded && (
             <p
