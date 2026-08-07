@@ -18,7 +18,7 @@
     "vitals": "Signos vitales",
     "fitness": "Actividad física",
     "cycleTracking": "Seguimiento de ciclo",
-    "conditions": "Condiciones",
+    "conditions": "Condiciones médicas",
     "allergies": "Alergias",
     "procedures": "Procedimientos",
     "vaccines": "Vacunas",
@@ -29,9 +29,9 @@
     "logOut": "Cerrar sesión"
   },
   "conditions": {
-    "title": "Condiciones",
-    "addCondition": "Agregar condición",
-    "filterAriaLabel": "Filtrar condiciones por estado",
+    "title": "Condiciones médicas",
+    "addCondition": "Agregar condición médica",
+    "filterAriaLabel": "Filtrar condiciones médicas por estado",
     "statusAll": "Todas",
     "status": {
       "active": "Activa",
@@ -39,26 +39,26 @@
       "managed": "Controlada",
       "monitoring": "En observación"
     },
-    "loadingLabel": "Cargando condiciones",
-    "noConditionsTitle": "Aún no hay condiciones registradas",
-    "noStatusConditionsTitle": "No hay condiciones: {status}",
-    "noConditionsDescription": "Registra tus condiciones de salud junto con su estado y los proveedores relacionados.",
-    "noStatusConditionsDescription": "No tienes condiciones con el estado \"{status}\".",
+    "loadingLabel": "Cargando condiciones médicas",
+    "noConditionsTitle": "Aún no hay condiciones médicas registradas",
+    "noStatusConditionsTitle": "No hay condiciones médicas: {status}",
+    "noConditionsDescription": "Registra tus condiciones médicas junto con su estado y los profesionales de la salud relacionados.",
+    "noStatusConditionsDescription": "No tienes condiciones médicas con el estado \"{status}\".",
     "form": {
       "nameLabel": "Nombre",
-      "namePlaceholder": "Buscar condiciones (p. ej. Apnea del sueño)...",
+      "namePlaceholder": "Buscar condiciones médicas (p. ej. Apnea del sueño)...",
       "statusLabel": "Estado",
       "diagnosedDateLabel": "Fecha de diagnóstico",
-      "providerLabel": "Proveedor",
+      "providerLabel": "Profesional de la salud",
       "notesLabel": "Notas",
       "notesPlaceholder": "Notas adicionales...",
       "adding": "Agregando..."
     },
     "card": {
       "diagnosed": "Diagnosticada: {date}",
-      "editAriaLabel": "Editar condición {name}",
+      "editAriaLabel": "Editar condición médica {name}",
       "notes": "Notas",
-      "changeStatusAriaLabel": "Cambiar estado de la condición",
+      "changeStatusAriaLabel": "Cambiar estado de la condición médica",
       "changeStatusSr": "Cambiar estado"
     }
   },
@@ -107,7 +107,7 @@
       "editProcedure": "Editar procedimiento",
       "saveChanges": "Guardar cambios",
       "cptCode": "CPT: {code}",
-      "providerOnFile": "Proveedor registrado",
+      "providerOnFile": "Profesional de la salud registrado",
       "confirmYes": "Sí",
       "confirmNo": "No"
     },
@@ -115,7 +115,7 @@
       "nameLabel": "Nombre del procedimiento",
       "namePlaceholder": "Buscar procedimientos (p. ej. Colecistectomía)...",
       "dateLabel": "Fecha",
-      "providerLabel": "Proveedor",
+      "providerLabel": "Profesional de la salud",
       "notesLabel": "Notas",
       "notesPlaceholder": "Notas adicionales...",
       "saving": "Guardando..."
@@ -150,7 +150,7 @@
       "other": "Otro"
     },
     "card": {
-      "unknownProvider": "Proveedor desconocido",
+      "unknownProvider": "Profesional de la salud desconocido",
       "past": "Pasada",
       "upcoming": "Próxima",
       "followUp": "Seguimiento: {date}",
@@ -158,8 +158,8 @@
       "notes": "Notas"
     },
     "form": {
-      "providerLabelRequired": "Proveedor *",
-      "providerLabel": "Proveedor",
+      "providerLabelRequired": "Profesional de la salud *",
+      "providerLabel": "Profesional de la salud",
       "dateTimeLabel": "Fecha y hora",
       "reasonLabel": "Motivo",
       "reasonPlaceholder": "p. ej. Chequeo anual",
@@ -180,7 +180,7 @@
     },
     "noNotesTitle": "Aún no hay notas",
     "noTypeNotesTitle": "No hay notas: {type}",
-    "noNotesDescription": "Registra síntomas, efectos secundarios y observaciones generales de salud para compartir con tus proveedores.",
+    "noNotesDescription": "Registra síntomas, efectos secundarios y observaciones generales de salud para compartir con tus profesionales de la salud.",
     "feedAriaLabel": "Feed de notas",
     "type": {
       "general": "General",
@@ -326,7 +326,7 @@
     },
     "alert": {
       "snooze": "Posponer",
-      "snoozeAriaLabel": "Posponer alerta",
+      "snoozeAriaLabel": "Posponer interacción medicamentosa",
       "ariaLabel": "Alerta de interacción medicamentosa: {severity}",
       "day1": "1 día",
       "week1": "1 semana",
@@ -402,8 +402,8 @@
     "sections": {
       "profileTitle": "Perfil",
       "profileDescription": "Administra tu información personal, fecha de nacimiento y datos biológicos.",
-      "providersTitle": "Proveedores",
-      "providersDescription": "Administra tus proveedores de atención médica y su información de contacto.",
+      "providersTitle": "Profesionales de la salud",
+      "providersDescription": "Administra tus profesionales de la salud y su información de contacto.",
       "familyTitle": "Familia y dependientes",
       "familyDescription": "Administra los familiares y dependientes cuyos datos de salud registras.",
       "importHistoryTitle": "Importar historial médico",
@@ -417,7 +417,7 @@
       "apiAccessTitle": "Acceso a la API",
       "apiAccessDescription": "Genera tokens para acceder a tus datos de salud desde aplicaciones y scripts externos.",
       "healthSharingTitle": "Compartir información de salud",
-      "healthSharingDescription": "Comparte tus datos de salud con familiares, cuidadores o proveedores.",
+      "healthSharingDescription": "Comparte tus datos de salud con familiares, cuidadores o profesionales de la salud.",
       "dataExportTitle": "Exportar datos",
       "dataExportDescription": "Exporta tus datos de salud como un archivo JSON para respaldo personal.",
       "pdfExportTitle": "Resumen de salud en PDF",
