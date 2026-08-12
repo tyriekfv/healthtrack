@@ -129,7 +129,8 @@ export default function LabsPage() {
     const normal: Array<{ testName: string; results: TrendPoint[] }> = [];
 
     for (const [testName, results] of trendData) {
-      const hasFlagged = results.some((r) => r.flag && r.flag !== 'normal');
+      const latest = results[results.length - 1];
+      const hasFlagged = latest?.flag && latest.flag !== 'normal';
       if (hasFlagged) {
         attention.push({ testName, results });
       } else {
