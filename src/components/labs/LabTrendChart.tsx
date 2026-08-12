@@ -40,9 +40,9 @@ interface LabTrendChartProps {
 function formatAxisDate(dateStr: string, useShort: boolean): string {
   const d = new Date(dateStr);
   if (useShort) {
-    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', timeZone: 'UTC' });
   }
-  return d.toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
+  return d.toLocaleDateString(undefined, { month: 'short', year: 'numeric', timeZone: 'UTC' });
 }
 
 /** Custom dot renderer with flag-aware coloring */
@@ -181,6 +181,7 @@ export default function LabTrendChart({
                     year: 'numeric',
                     month: 'short',
                     day: 'numeric',
+                    timeZone: 'UTC',
                   })
                 }
               />

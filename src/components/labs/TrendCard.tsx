@@ -177,7 +177,7 @@ export default function TrendCard({ testName, results, pinned = false }: TrendCa
               {sorted.map((r, i) => (
                 <tr key={i} style={{ borderBottom: '1px solid var(--border-card)' }}>
                   <td className="px-3 py-1.5" style={{ color: 'var(--color-text-primary)' }}>
-                    {new Date(r.visit_date).toLocaleDateString()}
+                    {new Date(r.visit_date).toLocaleDateString(undefined, { timeZone: 'UTC' })}
                   </td>
                   <td
                     className="px-3 py-1.5 font-mono"

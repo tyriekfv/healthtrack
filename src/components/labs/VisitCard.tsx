@@ -116,7 +116,7 @@ export default function VisitCard({
   async function handleDelete() {
     const confirmed = window.confirm(
       t('deleteConfirm', {
-        date: new Date(visit.visit_date).toLocaleDateString(),
+        date: new Date(visit.visit_date).toLocaleDateString(undefined, { timeZone: 'UTC' }),
         count: visit.results.length,
       }),
     );
@@ -214,6 +214,7 @@ export default function VisitCard({
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',
+                timeZone: 'UTC',
               })}
             </span>
             {visit.source_pdf_path && (
