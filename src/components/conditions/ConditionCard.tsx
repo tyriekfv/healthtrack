@@ -188,7 +188,7 @@ export default function ConditionCard({ condition, onUpdate }: ConditionCardProp
 
           {condition.diagnosed_date && (
             <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
-              {t('card.diagnosed', { date: new Date(condition.diagnosed_date).toLocaleDateString() })}
+              {t('card.diagnosed', { date: new Date(condition.diagnosed_date).toLocaleDateString(undefined, { timeZone: 'UTC' }) })}
             </p>
           )}
         </div>

@@ -6,7 +6,7 @@ import type { Procedure } from '@/lib/types';
 import AddProcedureForm, { type AddProcedureFormData } from './AddProcedureForm';
 
 function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 }
 
 interface ProcedureCardProps {

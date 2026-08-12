@@ -464,7 +464,7 @@ function DependentCard({
               <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
                 DOB:{' '}
                 <span className="font-mono" style={{ color: 'var(--color-text-primary)' }}>
-                  {new Date(dependent.date_of_birth).toLocaleDateString()}
+                  {new Date(dependent.date_of_birth).toLocaleDateString(undefined, { timeZone: 'UTC' })}
                 </span>
               </span>
               <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>

@@ -24,7 +24,7 @@ import DateRangeFilter from '@/components/shared/DateRangeFilter';
 
 function calculateAge(dob: string | null): number {
   if (!dob) return 30; // fallback
-  const birth = new Date(dob);
+  const birth = new Date(`${dob}T00:00:00`);
   const now = new Date();
   let age = now.getFullYear() - birth.getFullYear();
   const monthDiff = now.getMonth() - birth.getMonth();

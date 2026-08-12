@@ -267,8 +267,8 @@ function SentShareRow({
         </div>
         {share.expires_at && (
           <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-            {new Date(share.expires_at) < new Date() ? 'Expired' : 'Expires'}:{' '}
-            {new Date(share.expires_at).toLocaleDateString()}
+            {new Date(`${share.expires_at}T23:59:59.999Z`) < new Date() ? 'Expired' : 'Expires'}:{' '}
+            {new Date(share.expires_at).toLocaleDateString(undefined, { timeZone: 'UTC' })}
           </p>
         )}
       </div>
@@ -335,7 +335,7 @@ function ReceivedShareRow({
         </div>
         {share.expires_at && (
           <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-            Expires: {new Date(share.expires_at).toLocaleDateString()}
+            Expires: {new Date(share.expires_at).toLocaleDateString(undefined, { timeZone: 'UTC' })}
           </p>
         )}
       </div>

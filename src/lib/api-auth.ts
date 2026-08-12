@@ -56,7 +56,13 @@ export async function validateApiKey(authHeader: string | null): Promise<ApiKeyC
   const data = rows[0];
   if (!data) return null;
   if (data.revokedAt) return null;
-  if (data.expiresAt && new Date(data.expiresAt) < new Date()) return null;
+  if (data.expiresAt) {
+    // Day-only (YYYY-MM-DD) values come from a date picker and mean "valid
+    // through this calendar day" — anchor to end-of-day UTC so the key
+    // doesn't stop working hours early for users west of UTC.
+    const iso = data.expiresAt.includes('T') ? data.expiresAt : `${data.expiresAt}T23:59:59.999Z`;
+    if (new Date(iso) < new Date()) return null;
+  }
 
   // Update last_used_at (side effect; synchronous with better-sqlite3)
   await db

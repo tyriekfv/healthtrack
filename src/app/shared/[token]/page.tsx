@@ -13,6 +13,7 @@ import type {
   Appointment,
   Note,
 } from '@/lib/types';
+import { formatVitalDate } from '@/lib/dates';
 
 // ---------------------------------------------------------------------------
 // Design tokens
@@ -132,7 +133,7 @@ function ConditionsView({ items }: { items: Condition[] }) {
               <p className="text-sm font-medium" style={{ color: c.text }}>{cond.name}</p>
               {cond.diagnosed_date && (
                 <p className="text-xs" style={{ color: c.muted }}>
-                  Diagnosed: {new Date(cond.diagnosed_date).toLocaleDateString()}
+                  Diagnosed: {new Date(cond.diagnosed_date).toLocaleDateString(undefined, { timeZone: 'UTC' })}
                 </p>
               )}
             </div>
@@ -164,7 +165,7 @@ function VitalsView({ items }: { items: Vital[] }) {
                   {v.metric_key.replace(/_/g, ' ')}
                 </p>
                 <p className="text-xs" style={{ color: c.muted }}>
-                  {new Date(v.recorded_at).toLocaleDateString()}
+                  {formatVitalDate(v.recorded_at, v.metric_key)}
                 </p>
               </div>
               <span className="text-sm font-medium" style={{ color: c.sage }}>
@@ -268,7 +269,7 @@ function ProceduresView({ items }: { items: Procedure[] }) {
               )}
             </div>
             <p className="text-xs" style={{ color: c.muted }}>
-              {new Date(p.procedure_date).toLocaleDateString()}
+              {new Date(p.procedure_date).toLocaleDateString(undefined, { timeZone: 'UTC' })}
             </p>
           </div>
         ))}
@@ -295,7 +296,7 @@ function VaccinesView({ items }: { items: Vaccine[] }) {
               )}
             </div>
             <p className="text-xs" style={{ color: c.muted }}>
-              {new Date(v.vaccine_date).toLocaleDateString()}
+              {new Date(v.vaccine_date).toLocaleDateString(undefined, { timeZone: 'UTC' })}
             </p>
           </div>
         ))}
@@ -479,7 +480,11 @@ export default function PublicSharedPage({
 
   const { share, data } = payload;
   const sections = share.shared_sections;
-  const isExpired = share.expires_at ? new Date(share.expires_at) < new Date() : false;
+  // expires_at is a day-only (YYYY-MM-DD) value — valid through end of that
+  // day UTC, matching the server-side check in lib/authz/index.ts.
+  const isExpired = share.expires_at
+    ? new Date(`${share.expires_at}T23:59:59.999Z`) < new Date()
+    : false;
 
   return (
     <div className="min-h-screen py-8 px-4" style={{ backgroundColor: c.bg }}>
@@ -531,8 +536,8 @@ export default function PublicSharedPage({
                 }}
               >
                 {isExpired
-                  ? 'Expired ' + new Date(share.expires_at).toLocaleDateString()
-                  : 'Expires ' + new Date(share.expires_at).toLocaleDateString()}
+                  ? 'Expired ' + new Date(share.expires_at).toLocaleDateString(undefined, { timeZone: 'UTC' })
+                  : 'Expires ' + new Date(share.expires_at).toLocaleDateString(undefined, { timeZone: 'UTC' })}
               </span>
             )}
 

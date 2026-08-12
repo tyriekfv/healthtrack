@@ -1,6 +1,7 @@
 'use client';
 
 import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
+import { formatVitalDate } from '@/lib/dates';
 
 const colors = {
   sage: '#81B29A',
@@ -161,6 +162,7 @@ function formatDate(dateStr?: string | null): string {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
+      timeZone: 'UTC',
     });
   } catch {
     return dateStr;
@@ -336,7 +338,7 @@ function VitalsSection({ vitals }: { vitals: HealthSummaryPdfProps['vitals'] }) 
           <Text style={[styles.tableCell, { flex: 2 }]}>
             {v.value} {v.unit ?? ''}
           </Text>
-          <Text style={[styles.tableCell, { flex: 3 }]}>{formatDate(v.recorded_at)}</Text>
+          <Text style={[styles.tableCell, { flex: 3 }]}>{formatVitalDate(v.recorded_at, v.metric_key)}</Text>
         </View>
       ))}
     </SectionBlock>

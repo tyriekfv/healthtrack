@@ -189,7 +189,7 @@ function SentDelegateRow({
         </div>
         {delegate.expires_at && (
           <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-            Expires: {new Date(delegate.expires_at).toLocaleDateString()}
+            Expires: {new Date(delegate.expires_at).toLocaleDateString(undefined, { timeZone: 'UTC' })}
           </p>
         )}
         <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
@@ -241,7 +241,7 @@ function ReceivedDelegateRow({
         </div>
         {delegate.expires_at && (
           <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-            Expires: {new Date(delegate.expires_at).toLocaleDateString()}
+            Expires: {new Date(delegate.expires_at).toLocaleDateString(undefined, { timeZone: 'UTC' })}
           </p>
         )}
         {delegate.accepted_at && (

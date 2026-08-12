@@ -88,7 +88,7 @@ export function useDependents() {
   }, []);
 
   const getAge = useCallback((dependent: Dependent): number => {
-    const dob = new Date(dependent.date_of_birth);
+    const dob = new Date(`${dependent.date_of_birth}T00:00:00`);
     const today = new Date();
     let age = today.getFullYear() - dob.getFullYear();
     const monthDiff = today.getMonth() - dob.getMonth();

@@ -141,7 +141,12 @@ function isKnownSection(section: string): section is Section {
 
 function isUnexpired(expiresAt: string | null): boolean {
   if (expiresAt === null) return true;
-  const t = new Date(expiresAt).getTime();
+  // Day-only (YYYY-MM-DD) values come from a date picker and mean "valid
+  // through this calendar day" — anchor to end-of-day UTC so the grant
+  // doesn't lapse hours early for users west of UTC. Full ISO instants
+  // (already containing a time component) pass through unchanged.
+  const iso = expiresAt.includes('T') ? expiresAt : `${expiresAt}T23:59:59.999Z`;
+  const t = new Date(iso).getTime();
   return Number.isFinite(t) && t > Date.now();
 }
 

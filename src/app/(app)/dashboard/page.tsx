@@ -35,7 +35,7 @@ import HealthSummaryCard from '@/components/dashboard/HealthSummaryCard';
 // ---------------------------------------------------------------------------
 
 function calculateAge(dateOfBirth: string): number {
-  const dob = new Date(dateOfBirth);
+  const dob = new Date(`${dateOfBirth}T00:00:00`);
   const today = new Date();
   let age = today.getFullYear() - dob.getFullYear();
   const monthDiff = today.getMonth() - dob.getMonth();

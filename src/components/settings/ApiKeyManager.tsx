@@ -16,7 +16,9 @@ const MIN_EXPIRES_AT = new Date(Date.now() + 86400000).toISOString().split('T')[
 
 function getKeyStatus(key: ApiKey): 'revoked' | 'expired' | 'active' {
   if (key.revoked_at) return 'revoked';
-  if (key.expires_at && new Date(key.expires_at) < new Date()) return 'expired';
+  // expires_at is a day-only (YYYY-MM-DD) value — valid through end of that
+  // day UTC, matching the server-side check in lib/api-auth.ts.
+  if (key.expires_at && new Date(`${key.expires_at}T23:59:59.999Z`) < new Date()) return 'expired';
   return 'active';
 }
 
@@ -26,6 +28,16 @@ function formatDate(iso: string | null): string {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
+  });
+}
+
+/** expires_at is a day-only (YYYY-MM-DD) value from a date picker, not a real instant. */
+function formatExpiresDate(iso: string): string {
+  return new Date(iso).toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'UTC',
   });
 }
 
@@ -468,7 +480,7 @@ function ApiKeyRow({
           </p>
           {apiKey.expires_at && (
             <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-              Expires: {formatDate(apiKey.expires_at)}
+              Expires: {formatExpiresDate(apiKey.expires_at)}
             </p>
           )}
           <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>

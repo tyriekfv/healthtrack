@@ -236,7 +236,7 @@ export default function AppointmentCard({ appointment, onUpdate, providerName, p
 
           {appointment.follow_up_date && (
             <p className="text-xs mt-2" style={{ color: 'var(--color-warning)' }}>
-              {t('card.followUp', { date: new Date(appointment.follow_up_date).toLocaleDateString() })}
+              {t('card.followUp', { date: new Date(appointment.follow_up_date).toLocaleDateString(undefined, { timeZone: 'UTC' }) })}
             </p>
           )}
         </div>
