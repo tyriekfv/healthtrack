@@ -12,6 +12,13 @@ describe('normalizeLabTestName', () => {
     expect(normalizeLabTestName(left)).toBe(normalizeLabTestName(right));
   });
 
+  it('merges Labcorp "Sensitive" with "Ultrasensitive" estradiol (same LC/MS/MS assay, different brand name)', () => {
+    expect(normalizeLabTestName('Estradiol, Sensitive')).toBe(
+      normalizeLabTestName('Estradiol, Ultrasensitive, LC/MS'),
+    );
+    expect(normalizeLabTestName('Estradiol, Sensitive')).not.toBe(normalizeLabTestName('Estradiol'));
+  });
+
   it('does not merge free and total testosterone', () => {
     expect(normalizeLabTestName('Testosterone, Free')).not.toBe(
       normalizeLabTestName('Testosterone, Total'),
@@ -52,7 +59,28 @@ describe('canonicalLabTestName', () => {
     ['Total Cholesterol', 'Cholesterol, Total'],
     ['Thyroid Stimulating Hormone', 'TSH'],
     ['HbA1c', 'Hemoglobin A1c'],
+    ['HgbA1c%', 'Hemoglobin A1c'],
     ['25-OH Vitamin D', 'Vitamin D, 25-Hydroxy'],
+    ['Sex Horm Binding Glob, Serum', 'SHBG'],
+    ['RBC, Auto', 'RBC'],
+    ['RDW, Blood', 'RDW'],
+    ["WBC's Auto", 'WBC'],
+    ['Eos', 'Eosinophils %'],
+    ['Basos', 'Basophils %'],
+    ['ALT (SGPT)', 'ALT'],
+    ['AST (SGOT)', 'AST'],
+    ['Urea Nitrogen (BUN)', 'BUN'],
+    ['Triglyceride', 'Triglycerides'],
+    ['Cholesterol, Non-HDL', 'Non-HDL Cholesterol'],
+    ['LDL Calculated', 'LDL Cholesterol'],
+    ['LDL-C (NIH Calc)', 'LDL Cholesterol'],
+    ['LDL-P (LDL Particle Number)', 'LDL Particle Number'],
+    ['LDL Size (IR panel)', 'LDL Size'],
+    ['Prostate Specific Ag', 'PSA, Total'],
+    ['Iron Sat', 'Iron Saturation'],
+    ['Vit B12', 'Vitamin B12'],
+    ['Iron Binding Capacity', 'TIBC'],
+    ['Estradiol, Sensitive', 'Estradiol, Ultrasensitive'],
   ])('maps a provider spelling to its canonical display name: %s -> %s', (raw, canonical) => {
     expect(canonicalLabTestName(raw)).toBe(canonical);
   });
