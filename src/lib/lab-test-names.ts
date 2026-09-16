@@ -83,7 +83,13 @@ const ANALYTE_GROUPS: AnalyteGroup[] = [
   { canonical: 'Immature Granulocytes', variants: ['Immature Granulocytes', 'Immature Grans (Abs)'] },
 
   // --- CMP -----------------------------------------------------------------
-  { canonical: 'Glucose', variants: ['Glucose', 'Glucose, Fasting', 'Glucose Fasting', 'GLU', 'Glucose, Random'] },
+  { canonical: 'Glucose', variants: ['Glucose', 'Glucose, Fasting', 'Glucose Fasting', 'GLU'] },
+  // Not an assay-method split like the ones above — same measurement
+  // technique either way — but fasting and random glucose carry genuinely
+  // different reference ranges (fasting ~65-99 mg/dL normal; random has no
+  // comparable tight band), so merging them under one canonical name mixes
+  // incompatible thresholds the same way a method split would.
+  { canonical: 'Glucose, Random', variants: ['Glucose, Random', 'Glucose Random'] },
   { canonical: 'BUN', variants: ['BUN', 'Blood Urea Nitrogen', 'Urea Nitrogen', 'Urea Nitrogen (BUN)'] },
   { canonical: 'Creatinine', variants: ['Creatinine', 'CREAT'] },
   { canonical: 'eGFR', variants: ['eGFR', 'EGFR', 'GFR Estimated', 'Estimated GFR', 'Glomerular Filtration Rate'] },

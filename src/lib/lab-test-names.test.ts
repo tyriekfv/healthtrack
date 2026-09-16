@@ -47,6 +47,13 @@ describe('normalizeLabTestName', () => {
     );
   });
 
+  it('does not merge fasting and random glucose (different reference ranges)', () => {
+    expect(normalizeLabTestName('Glucose, Random')).not.toBe(
+      normalizeLabTestName('Glucose, Fasting'),
+    );
+    expect(normalizeLabTestName('Glucose Random')).not.toBe(normalizeLabTestName('GLU'));
+  });
+
   it('folds case, punctuation, unicode, and whitespace', () => {
     expect(normalizeLabTestName('  TESTOSTERONE,\u00a0TOTAL  ')).toBe(
       normalizeLabTestName('testosterone total'),
@@ -91,6 +98,8 @@ describe('canonicalLabTestName', () => {
     ['Estradiol, Sensitive', 'Estradiol, Ultrasensitive'],
     ['Free Testosterone (Direct)', 'Testosterone, Free, Direct'],
     ['Free Testosterone(Direct)', 'Testosterone, Free, Direct'],
+    ['Glucose Random', 'Glucose, Random'],
+    ['GLU', 'Glucose'],
   ])('maps a provider spelling to its canonical display name: %s -> %s', (raw, canonical) => {
     expect(canonicalLabTestName(raw)).toBe(canonical);
   });
