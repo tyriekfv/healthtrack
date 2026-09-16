@@ -1,0 +1,64 @@
+# Windows desktop build: packages the same Next.js standalone server the
+# Docker image runs into an Electron shell + NSIS installer, so it runs on
+# Windows without Docker. Built on windows-latest so `npm ci` fetches
+# better-sqlite3's win32-x64 prebuilt binary automatically — no cross-compile
+# toolchain needed. Manual trigger only for now (no auto-tagging pipeline
+# like release.yml yet).
+name: Windows Desktop Build
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Build Next.js standalone server
+        run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: '1'
+
+      - name: Bundle migration runner into the standalone output
+        run: npx esbuild scripts/db-migrate.ts --bundle --platform=node --format=cjs --alias:@=./src --external:better-sqlite3 --outfile=.next/standalone/db-migrate.js
+
+      - name: Assemble standalone app resources for the desktop shell
+        shell: pwsh
+        run: |
+          $dest = "desktop-windows/resources/app-standalone"
+          New-Item -ItemType Directory -Force -Path $dest | Out-Null
+          Copy-Item -Recurse -Force ".next/standalone/*" $dest
+          New-Item -ItemType Directory -Force -Path "$dest/.next/static" | Out-Null
+          Copy-Item -Recurse -Force ".next/static/*" "$dest/.next/static"
+          Copy-Item -Recurse -Force "public" "$dest/public"
+          Copy-Item -Recurse -Force "drizzle" "$dest/drizzle"
+          Copy-Item -Force (Get-Command node).Source "desktop-windows/resources/node.exe"
+
+      - name: Install desktop app dependencies
+        working-directory: desktop-windows
+        run: npm ci
+
+      - name: Build Windows installer
+        working-directory: desktop-windows
+        run: npm run dist
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: HealthTrack-Windows-Installer
+          path: desktop-windows/dist/*.exe
+          retention-days: 30

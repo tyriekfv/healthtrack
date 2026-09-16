@@ -1,0 +1,4 @@
+node_modules/
+dist/
+resources/app-standalone/
+resources/node.exe

@@ -1,0 +1,46 @@
+{
+  "name": "healthtrack-desktop",
+  "version": "1.0.0",
+  "private": true,
+  "description": "HealthTrack desktop shell for Windows — runs the same server as the Docker image, no Docker required.",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win nsis --x64"
+  },
+  "devDependencies": {
+    "electron": "^33.4.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.tyriekfv.healthtrack",
+    "productName": "HealthTrack",
+    "publish": null,
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      { "from": "resources/app-standalone", "to": "app-standalone" },
+      { "from": "resources/node.exe", "to": "node.exe" },
+      { "from": "build/icon.ico", "to": "icon.ico" }
+    ],
+    "win": {
+      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "icon": "build/icon.ico",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "HealthTrack"
+    }
+  }
+}
