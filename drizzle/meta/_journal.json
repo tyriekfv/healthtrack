@@ -85,6 +85,13 @@
       "when": 1786646400000,
       "tag": "0011_normalize-more-lab-test-names",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1786732800000,
+      "tag": "0012_split-free-testosterone-direct",
+      "breakpoints": true
     }
   ]
 }

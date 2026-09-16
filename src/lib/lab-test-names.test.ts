@@ -37,6 +37,14 @@ describe('normalizeLabTestName', () => {
     expect(normalizeLabTestName('Estradiol, Ultrasensitive, LC/MS')).not.toBe(
       normalizeLabTestName('Estradiol'),
     );
+    // Labcorp's Direct RIA immunoassay vs calculated/equilibrium-dialysis free
+    // testosterone — different scales, must not merge into one series.
+    expect(normalizeLabTestName('Free Testosterone (Direct)')).not.toBe(
+      normalizeLabTestName('Testosterone, Free'),
+    );
+    expect(normalizeLabTestName('Free Testosterone(Direct)')).not.toBe(
+      normalizeLabTestName('Testosterone, Free'),
+    );
   });
 
   it('folds case, punctuation, unicode, and whitespace', () => {
@@ -81,6 +89,8 @@ describe('canonicalLabTestName', () => {
     ['Vit B12', 'Vitamin B12'],
     ['Iron Binding Capacity', 'TIBC'],
     ['Estradiol, Sensitive', 'Estradiol, Ultrasensitive'],
+    ['Free Testosterone (Direct)', 'Testosterone, Free, Direct'],
+    ['Free Testosterone(Direct)', 'Testosterone, Free, Direct'],
   ])('maps a provider spelling to its canonical display name: %s -> %s', (raw, canonical) => {
     expect(canonicalLabTestName(raw)).toBe(canonical);
   });
@@ -92,6 +102,12 @@ describe('canonicalLabTestName', () => {
     );
     expect(canonicalLabTestName('Estradiol, Ultrasensitive')).not.toBe(
       canonicalLabTestName('Estradiol'),
+    );
+    expect(canonicalLabTestName('Free Testosterone (Direct)')).toBe(
+      'Testosterone, Free, Direct',
+    );
+    expect(canonicalLabTestName('Free Testosterone (Direct)')).not.toBe(
+      canonicalLabTestName('Testosterone, Free'),
     );
   });
 

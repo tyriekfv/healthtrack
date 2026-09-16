@@ -25,6 +25,9 @@
  * same one. Percent vs. absolute-count differentials (e.g. Neutrophils %
  * vs Neutrophils Absolute) are kept separate for the same reason: they are
  * different numbers with different units, not two spellings of one value.
+ * Testosterone, Free vs Testosterone, Free, Direct is the same split again —
+ * calculated/equilibrium-dialysis free testosterone vs Labcorp's older
+ * Direct RIA immunoassay, which reports on a materially different scale.
  *
  * eGFR needs the same treatment but can't be done by name alone: creatinine-
  * based eGFR (the default/most common formula) and cystatin-C-based eGFR are
@@ -119,7 +122,14 @@ const ANALYTE_GROUPS: AnalyteGroup[] = [
   // --- Hormones ------------------------------------------------------------
   { canonical: 'Testosterone, Total', variants: ['Testosterone', 'Testosterone, Total', 'Testosterone Total'] },
   { canonical: 'Testosterone, Total, MS', variants: ['Testosterone, Total, MS', 'Testosterone Total MS', 'Testosterone, Total MS'] },
-  { canonical: 'Testosterone, Free', variants: ['Testosterone, Free', 'Testosterone Free', 'Free Testosterone', 'Free T', 'Free Testosterone (Direct)', 'Free Testosterone(Direct)'] },
+  { canonical: 'Testosterone, Free', variants: ['Testosterone, Free', 'Testosterone Free', 'Free Testosterone', 'Free T'] },
+  // Labcorp's "Free Testosterone(Direct)" is their older analog RIA
+  // immunoassay — a different, less accurate method from the equilibrium-
+  // dialysis/calculated "Testosterone, Free" above, with a materially lower
+  // reference range (real-world reports: ~6.8-21.5 pg/mL Direct vs ~35-155
+  // pg/mL calculated). Same rationale as the Total/MS split in the file
+  // header: merging them mixed two incompatible scales under one series.
+  { canonical: 'Testosterone, Free, Direct', variants: ['Testosterone, Free, Direct', 'Free Testosterone (Direct)', 'Free Testosterone(Direct)', 'Testosterone Free Direct'] },
   { canonical: 'SHBG', variants: ['SHBG', 'Sex Hormone Binding Globulin', 'Sex Horm Binding Glob, Serum', 'Sex Horm Binding Glob'] },
   { canonical: 'LH', variants: ['LH', 'Luteinizing Hormone'] },
   { canonical: 'FSH', variants: ['FSH', 'Follicle Stimulating Hormone'] },

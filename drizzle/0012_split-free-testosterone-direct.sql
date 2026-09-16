@@ -1,0 +1,16 @@
+-- Data-only migration: un-merge "Testosterone, Free, Direct" rows that
+-- migrations 0009/0011 incorrectly folded into "Testosterone, Free" (see the
+-- corresponding fix in src/lib/lab-test-names.ts). Labcorp's Direct RIA
+-- immunoassay and their calculated/equilibrium-dialysis free testosterone
+-- are different methods with materially different scales, but by the time
+-- this is caught, test_name for both has already been overwritten to the
+-- same string — the source spelling isn't recoverable.
+--
+-- The per-row reference range survives independently of test_name (it's
+-- never touched by canonicalization), and real-world reports show these
+-- methods use non-overlapping ranges: Direct ~6.8-21.5 pg/mL vs calculated
+-- ~35-155+ pg/mL. reference_range_high < 30 is a conservative split on that
+-- gap. Rows with no stored reference range can't be disambiguated this way
+-- and are left as "Testosterone, Free" rather than guessed at — same
+-- conservative stance as an unrecognized test name elsewhere in this file.
+UPDATE `lab_results` SET `test_name` = 'Testosterone, Free, Direct' WHERE `test_name` = 'Testosterone, Free' AND `reference_range_high` IS NOT NULL AND `reference_range_high` < 30;
