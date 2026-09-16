@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Separate Node/Electron sub-project (its own package.json, plain CJS
+    // main process) -- not part of the Next.js app this config targets.
+    "desktop-windows/**",
   ]),
 ]);
 
