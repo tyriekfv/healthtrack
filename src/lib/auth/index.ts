@@ -42,12 +42,32 @@ export async function getSignupPolicy(): Promise<SignupPolicy> {
   return 'invite';
 }
 
+/**
+ * EXTRA_TRUSTED_ORIGINS — comma-separated additional origins allowed to
+ * authenticate, alongside APP_URL. For running behind a tunnel (APP_URL=the
+ * public https address) while also staying reachable directly on the LAN
+ * (e.g. http://192.168.1.50:3000) without the tunnel in the loop — both need
+ * to pass better-auth's origin check independently. Whitespace around each
+ * entry is trimmed; empty entries are dropped.
+ */
+function extraTrustedOrigins(): string[] {
+  return (process.env.EXTRA_TRUSTED_ORIGINS ?? '')
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean);
+}
+
 function buildAuth() {
   const appUrl = process.env.APP_URL ?? 'http://localhost:3000';
+  const trustedOrigins = [appUrl, ...extraTrustedOrigins()];
 
-  // Session cookies only get the Secure flag when the base URL is https. Behind
-  // a TLS-terminating proxy/tunnel that forwards plain http, an http APP_URL
-  // would ship cookies without Secure — warn loudly so operators fix it.
+  // Session cookies only get the Secure flag when every trusted origin is
+  // https. Behind a TLS-terminating proxy/tunnel that forwards plain http,
+  // an http APP_URL would ship cookies without Secure — warn loudly so
+  // operators fix it. A deliberate mixed setup (EXTRA_TRUSTED_ORIGINS adding
+  // a plain-http LAN address alongside an https APP_URL) doesn't warn here;
+  // see the useSecureCookies comment below for why that combination is
+  // actually handled, not broken.
   if (!appUrl.startsWith('https://') && !appUrl.startsWith('http://localhost')) {
     console.warn(
       '[auth] APP_URL is not https — session cookies will NOT be marked Secure. ' +
@@ -63,17 +83,21 @@ function buildAuth() {
     database: drizzleAdapter(db, { provider: 'sqlite', schema }),
     secret: getOrCreateSecret('auth_secret'),
     baseURL: appUrl,
-    trustedOrigins: [appUrl],
+    trustedOrigins,
     telemetry: { enabled: false },
-    // Secure cookies require an https origin. NODE_ENV=production is baked
-    // into the Docker image unconditionally, so tying this to isProd instead
-    // of the actual APP_URL scheme forces Secure on every container
-    // deployment — including the plain-http LAN setups the Unraid/Docker
-    // Compose docs recommend (APP_URL=http://YOUR_SERVER_IP:3000). Browsers
-    // silently drop a Secure cookie sent over http, so login/registration
-    // appears to succeed but the session never sticks. Tie it to the scheme
-    // the warning above already checks.
-    advanced: { useSecureCookies: appUrl.startsWith('https://') },
+    // Secure cookies require https — and useSecureCookies is one flag for
+    // every origin this instance accepts, not per-origin. NODE_ENV=production
+    // is baked into the Docker image unconditionally, so tying this to isProd
+    // instead of the actual scheme forces Secure on every container
+    // deployment, including plain-http LAN setups (APP_URL=http://IP:3000,
+    // the Unraid/Docker Compose docs' own example) — browsers silently drop a
+    // Secure cookie sent over http, so login/registration appears to succeed
+    // but the session never sticks. Only force it when EVERY trusted origin
+    // is https: an operator who adds a plain-http LAN origin via
+    // EXTRA_TRUSTED_ORIGINS alongside an https APP_URL has explicitly asked
+    // for that LAN origin to work too, which a forced Secure flag would
+    // silently break there exactly as it would for an all-http deployment.
+    advanced: { useSecureCookies: trustedOrigins.every((o) => o.startsWith('https://')) },
     // Brute-force protection. In-memory storage is adequate for the
     // single-container self-hosted topology (one process); stricter per-route
     // caps on the credential endpoints blunt credential-stuffing.
@@ -190,6 +214,7 @@ function authCacheKey(): string {
   return JSON.stringify([
     process.env.DATA_DIR,
     process.env.APP_URL,
+    process.env.EXTRA_TRUSTED_ORIGINS,
     process.env.SIGNUPS_ENABLED,
     process.env.GOOGLE_CLIENT_ID,
     process.env.AUTH_SECRET,

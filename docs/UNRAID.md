@@ -98,6 +98,25 @@ APP_URL/api/oura/callback
 Whatever `APP_URL` you choose, it must exactly match the address you browse to
 (scheme, host and port). Restart the container after changing it.
 
+### Reaching it both through a tunnel and directly on the LAN
+
+`APP_URL` is a single address, so by default only the one origin you set it
+to can log in. If you use a reverse proxy or Cloudflare Tunnel for remote
+access (`APP_URL=https://your-domain`) but also want the instance reachable
+directly on your LAN (`http://YOUR_SERVER_IP:3000`) without the tunnel in the
+loop, set `EXTRA_TRUSTED_ORIGINS` to the LAN address:
+
+```
+APP_URL=https://health.example.com
+EXTRA_TRUSTED_ORIGINS=http://192.168.1.50:3000
+```
+
+Each origin is checked independently, so the LAN address works whether or
+not the tunnel is up. Adding a plain-`http` LAN origin here doesn't weaken
+the `https` `APP_URL`'s cookie security — HealthTrack only drops the Secure
+cookie flag when *every* trusted origin is non-https, i.e. when there's no
+https origin to protect in the first place.
+
 ## Submitting the template to Community Applications (repo owner)
 
 CA listing is a one-time action by the repository owner, via the submission

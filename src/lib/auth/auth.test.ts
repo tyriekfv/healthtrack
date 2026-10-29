@@ -18,7 +18,13 @@ import path from 'path';
 let tmpDir: string;
 let savedEnv: Record<string, string | undefined>;
 
-const ENV_KEYS = ['DATA_DIR', 'SIGNUPS_ENABLED', 'APP_URL', 'AUTH_SECRET'] as const;
+const ENV_KEYS = [
+  'DATA_DIR',
+  'SIGNUPS_ENABLED',
+  'APP_URL',
+  'AUTH_SECRET',
+  'EXTRA_TRUSTED_ORIGINS',
+] as const;
 
 async function loadAuth() {
   vi.resetModules();
@@ -201,5 +207,41 @@ describe('better auth server config', () => {
   it('does not register the google provider when env vars are absent', async () => {
     const auth = await loadAuth();
     expect(auth.options.socialProviders?.google).toBeUndefined();
+  });
+
+  it('forces Secure cookies when APP_URL is https and no extra origins are set', async () => {
+    process.env.APP_URL = 'https://health.example.com';
+    const auth = await loadAuth();
+    expect(auth.options.trustedOrigins).toEqual(['https://health.example.com']);
+    expect(auth.options.advanced?.useSecureCookies).toBe(true);
+  });
+
+  it('merges EXTRA_TRUSTED_ORIGINS into trustedOrigins, trimmed and de-blanked', async () => {
+    process.env.APP_URL = 'https://health.example.com';
+    process.env.EXTRA_TRUSTED_ORIGINS = ' http://10.0.0.5:3000 , https://alt.example.com ,,';
+    const auth = await loadAuth();
+    expect(auth.options.trustedOrigins).toEqual([
+      'https://health.example.com',
+      'http://10.0.0.5:3000',
+      'https://alt.example.com',
+    ]);
+  });
+
+  it('stops forcing Secure cookies once a plain-http extra origin is trusted too', async () => {
+    // A tunnel/reverse-proxy APP_URL (https) plus a LAN IP added via
+    // EXTRA_TRUSTED_ORIGINS (http) — the whole point is that LAN origin
+    // working independently of the tunnel, which a forced Secure flag would
+    // silently break there (see the useSecureCookies comment in index.ts).
+    process.env.APP_URL = 'https://health.example.com';
+    process.env.EXTRA_TRUSTED_ORIGINS = 'http://10.0.0.5:3000';
+    const auth = await loadAuth();
+    expect(auth.options.advanced?.useSecureCookies).toBe(false);
+  });
+
+  it('keeps forcing Secure cookies when every trusted origin, including extras, is https', async () => {
+    process.env.APP_URL = 'https://health.example.com';
+    process.env.EXTRA_TRUSTED_ORIGINS = 'https://alt.example.com';
+    const auth = await loadAuth();
+    expect(auth.options.advanced?.useSecureCookies).toBe(true);
   });
 });
